@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="transport-java.json.main" target="1.8" />
+      <module name="transport-java.json.test" target="1.8" />
+      <module name="transport-java.main" target="1.8" />
+      <module name="transport-java.notification.main" target="1.8" />
+      <module name="transport-java.notification.test" target="1.8" />
+      <module name="transport-java.test" target="1.8" />
+      <module name="transport-java.utils.main" target="1.8" />
+      <module name="transport-java.utils.test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
