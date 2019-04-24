@@ -42,7 +42,7 @@ public final class JsonUtils {
      *     }
      *
      *     // Using JsonUtils
-     *     JsonUtils.hasPath(node, "path", pathNode -> {
+     *     JsonUtils.hasPath(node, "path", pathNode -&#x3E; {
      *         entity.getCount().setTotal(pathNode.path("total").asLong());
      *     });
      * </pre>

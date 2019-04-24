@@ -44,10 +44,9 @@ public class TransportRequest implements RequestQuery, RequestAs {
     public TransportRequest(Function<URI, Request> requestFunction, String url) {
         this.url = url;
         this.requestFunction = requestFunction;
-        // TODO(fuxing): handle response
     }
 
-    String getUrl() {
+    public String getUrl() {
         return url;
     }
 
@@ -57,7 +56,7 @@ public class TransportRequest implements RequestQuery, RequestAs {
      * @return current TransportRequest instance for chaining
      */
     public TransportRequest path(String name, Object value) {
-        url = url.replace("/:" + name, value.toString());
+        url = url.replace("/:" + name, "/" + value.toString());
         return this;
     }
 
@@ -84,7 +83,10 @@ public class TransportRequest implements RequestQuery, RequestAs {
 
     @Override
     public TransportResponse asResponse() {
-        return asResponse(executor);
+        if (executor != null) return asResponse(executor);
+
+        // Automatically default to SHARED_EXECUTOR if not set.
+        return asResponse(TransportClient.SHARED_EXECUTOR);
     }
 
     public TransportResponse asResponse(Executor executor) {

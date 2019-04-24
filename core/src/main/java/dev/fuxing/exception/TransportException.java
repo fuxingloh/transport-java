@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * It's named transport exception to illustrate the idea that exception can survive the
- * transport process when moving between service & client.
+ * transport process when moving between service and client.
  * <p>
  * Created by: Fuxing
  * Date: 16/6/2017
@@ -151,7 +151,8 @@ public class TransportException extends RuntimeException {
 
     /**
      * @param clazz of the exception
-     * @return type of the error with namespace & it's an url destination
+     * @param <T>   exception type
+     * @return type of the error with namespace and it's an url destination
      */
     public static <T extends TransportException> String getType(Class<T> clazz) {
         return NAMESPACE + clazz.getName();

@@ -88,6 +88,7 @@ public class ValidationException extends TransportException {
     }
 
     /**
+     * @param key  of the param
      * @param node check if node is not null or missing
      * @return same node
      * @throws ValidationException if null or missing
@@ -100,6 +101,7 @@ public class ValidationException extends TransportException {
     }
 
     /**
+     * @param key  of the param
      * @param node check if node is not null, missing or blank
      * @return same node
      * @throws ValidationException if null, missing or blank
@@ -116,6 +118,7 @@ public class ValidationException extends TransportException {
      *
      * @param key   key to param
      * @param value value that is required non null
+     * @param <T>   value type
      * @return same value
      * @throws ParamException if null
      */
@@ -129,6 +132,7 @@ public class ValidationException extends TransportException {
      *
      * @param key   key to param
      * @param value value that is required non blank
+     * @param <T>   value type
      * @return same value
      * @throws ParamException if blank
      */

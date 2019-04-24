@@ -43,7 +43,7 @@ public final class CompareUtils {
     }
 
     /**
-     * Check that after is within before & elapsed
+     * Check that after is within before and elapsed
      * Before = 100m, elapsed = 20m, is after within 100 - 120
      *
      * @param beforeMillis before millis
@@ -88,7 +88,7 @@ public final class CompareUtils {
 
     /**
      * Check if the elapsed time has passed afterMillis since the before millis
-     * beforeMillis + elapsed < afterMillis
+     * beforeMillis + elapsed &#x3C; afterMillis
      * Basically will return true if elapsed time has passed since the before millis
      *
      * @param beforeMillis before millis

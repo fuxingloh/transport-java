@@ -45,6 +45,8 @@ public interface ContextBody extends Context {
     }
 
     /**
+     * @param clazz of body
+     * @param <T>   body class type
      * @return request body as json object
      */
     default <T> T bodyAsObject(Class<T> clazz) {

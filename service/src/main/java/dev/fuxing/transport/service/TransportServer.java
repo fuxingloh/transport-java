@@ -179,7 +179,7 @@ public class TransportServer {
     }
 
     /**
-     * @param context   with request & response
+     * @param context   with request and response
      * @param exception exception to write
      */
     protected void handleException(TransportContext context, TransportException exception) {

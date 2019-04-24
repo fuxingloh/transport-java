@@ -11,17 +11,17 @@ public enum TransportSort {
     /**
      * Non-natural sort.
      * From big to small.
-     * f > a > 9 > 5 > 4 > 0
+     * f, a, 9, 5, 4, 0
      * <p>
      * Integer:
-     * 100 > 0: True
-     * 0 > 100: False
+     * 100 &#x3E; 0: True
+     * 0 &#x3E; 100: False
      * <p>
      * String:
-     * "F" > "B": True
-     * "F" > "BA": True
-     * "FF" > "FB": True
-     * "FA" > "FB": False
+     * "F" &#x3E; "B": True
+     * "F" &#x3E; "BA": True
+     * "FF" &#x3E; "FB": True
+     * "FA" &#x3E; "FB": False
      * <p>
      * To ensure string are sorted properly.
      * - Make sure the field is the same size for all values.
@@ -32,7 +32,7 @@ public enum TransportSort {
     /**
      * Natural sort.
      * From small to big.
-     * 0 > 1 > 3 > 9 > a > f
+     * 0, 1, 3, 9, a, f
      */
     asc;
 

@@ -24,16 +24,18 @@ public @interface ExternalModel {
      * This value element MUST have the name of the source.
      * The recommended convention is to use the full qualified url of the source.
      * For example: https://instagrma.com/dev/doc
+     *
+     * @return Value
      */
     String[] value();
 
     /**
-     * Date when the source was generated.
+     * @return date when the source was generated.
      */
     String date() default "";
 
     /**
-     * A place holder for any comments that the code generator may want to
+     * @return A place holder for any comments that the code generator may want to
      * include in the generated code.
      */
     String comments() default "";

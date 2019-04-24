@@ -55,6 +55,7 @@ public class TransportResponse {
     }
 
     /**
+     * @param key of the header
      * @return get first header
      */
     public String getHeader(String key) {
@@ -128,6 +129,7 @@ public class TransportResponse {
      * Validate status code of response
      *
      * @param codes status codes to validate
+     * @return TransportResponse for fluent chaining
      */
     public TransportResponse hasCode(int... codes) {
         int code = getStatus();

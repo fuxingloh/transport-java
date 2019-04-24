@@ -1,5 +1,7 @@
 package dev.fuxing.transport.service;
 
+import dev.fuxing.transport.client.TransportRequest;
+import org.apache.http.client.fluent.Request;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -21,12 +23,12 @@ class TransportContextTest {
         TransportServer.start(PORT, "", new TransportService() {
             @Override
             public void route() {
-                GET("/path", call -> {
-                    logger.info("QS: {}", call.request().queryString());
+                GET("/path", cxt -> {
+                    logger.info("QS: {}", cxt.request().queryString());
 
-                    logger.info("Blank: {}", call.queryPresent("blank"));
-                    logger.info("Valued: {}", call.queryPresent("valued"));
-                    logger.info("None: {}", call.queryPresent("none"));
+                    logger.info("Blank: {}", cxt.queryPresent("blank"));
+                    logger.info("Valued: {}", cxt.queryPresent("valued"));
+                    logger.info("None: {}", cxt.queryPresent("none"));
 
                     return "abc";
                 });
@@ -41,10 +43,9 @@ class TransportContextTest {
 
     @Test
     void request() {
-        // TODO(fuxing): testing
-//        TransportRequest request = new TransportRequest(HttpMethod.GET, "http://localhost:" + PORT + "/path");
-//        request.query("blank");
-//        request.query("valued", "value");
-//        request.asResponse();
+        TransportRequest request = new TransportRequest(Request::Get, "http://localhost:" + PORT + "/path");
+        request.query("blank");
+        request.query("valued", "value");
+        request.asResponse();
     }
 }

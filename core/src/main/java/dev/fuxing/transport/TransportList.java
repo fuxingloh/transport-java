@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
- * This is a special class that will be automatically converted in TransportResult with data & next node info
+ * This is a special class that will be automatically converted in TransportResult with data and next node info
  * <p>
  * Created by: Fuxing
  * Date: 3/5/18

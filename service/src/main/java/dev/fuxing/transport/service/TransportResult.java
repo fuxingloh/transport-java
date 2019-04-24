@@ -57,7 +57,7 @@ public class TransportResult {
     /**
      * @param code status code
      * @param data json data
-     * @return TransportResult with custom status code & data
+     * @return TransportResult with custom status code and data
      */
     public static TransportResult of(int code, Object data) {
         return of(code).put("data", data);

@@ -25,6 +25,7 @@ public final class ParamException extends TransportException {
      * Param is not formatted correctly (Number, Boolean)
      * Can be thrown for QueryString, PathParams
      *
+     * @param param  first param
      * @param params list of param that is not available
      */
     public ParamException(String param, String... params) {
@@ -36,6 +37,7 @@ public final class ParamException extends TransportException {
      *
      * @param key   key to param
      * @param value value that is required non null
+     * @param <T>   value type
      * @return same value
      * @throws ParamException if null
      */
@@ -49,6 +51,7 @@ public final class ParamException extends TransportException {
      *
      * @param key   key to param
      * @param value value that is required non blank
+     * @param <T>   value type
      * @return same value
      * @throws ParamException if blank
      */

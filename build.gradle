@@ -15,7 +15,7 @@ subprojects {
     apply plugin: 'maven'
 
     group 'dev.fuxing'
-    version '0.1.0-SNAPSHOT'
+    version '1.0-SNAPSHOT'
 
     ext.jUnitVersion = '5.4.2'
     ext.guiceVersion = '4.2.2'
@@ -38,6 +38,13 @@ subprojects {
 
     repositories {
         mavenCentral()
+        maven {
+            url "${nexus_contextUrl}/repository/v22/"
+            credentials {
+                username = "${nexus_user}"
+                password = "${nexus_password}"
+            }
+        }
     }
 
     test {
@@ -62,7 +69,7 @@ subprojects {
         sign configurations.archives
     }
 
-    // uploadArchives closeAndPromoteRepository
+    // ./gradlew uploadArchives
     // OSSRH publication
     uploadArchives {
         repositories {
@@ -73,12 +80,15 @@ subprojects {
                 repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                     authentication(userName: ossrhUser, password: ossrhPassword)
                 }
+                snapshotRepository(url: "${nexus_contextUrl}/repository/v22-snapshots/") {
+                    authentication(userName: nexus_user, password: nexus_password)
+                }
                 pom {
                     artifactId = rootProject.name + '-' + project.name
 
                     project {
                         name 'transport-' + project.name
-                        description 'Very very very opinionated json communication protocol between your services.'
+                        description 'A very very very opinionated JSON communication protocol between your services.'
                         packaging 'jar'
                         url 'https://github.com/fuxingloh/transport-java'
 

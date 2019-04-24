@@ -144,9 +144,9 @@ public interface ContextQuery extends Context {
 
     /**
      * E.g.
-     * /path?name=&other=, queryPresent("name") = true
-     * /path?name=abc&other=, queryPresent("name") = true
-     * /path?name=abc&other=, queryPresent("none") = false
+     * /path?name=&#x26;other=, queryPresent("name") = true
+     * /path?name=abc&#x26;other=, queryPresent("name") = true
+     * /path?name=abc&#x26;other=, queryPresent("none") = false
      * /path, queryPresent("name") = false
      *
      * @param name name of query string
@@ -249,6 +249,7 @@ public interface ContextQuery extends Context {
      *
      * @param name  of enum
      * @param clazz to bound Object to
+     * @param defaultValue default enum value
      * @param <E>   Enum class
      * @return enum
      */

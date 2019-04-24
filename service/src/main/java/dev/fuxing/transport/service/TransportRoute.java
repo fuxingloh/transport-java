@@ -26,6 +26,9 @@ public interface TransportRoute extends Route {
     Object handle(TransportContext context) throws Exception;
 
     /**
+     * @param request  spark request
+     * @param response spark response
+     * @return TransportResult
      * @throws dev.fuxing.exception.TransportException auto convert into {error: {}}
      * @throws Exception                               auto convert into {error: {type: "UnknownException", ...}}
      * @see Object auto convert into {data: ...}
@@ -39,6 +42,16 @@ public interface TransportRoute extends Route {
 
     /**
      * Static handler for implementing classes to override
+     *
+     * @param request  spark request
+     * @param response spark response
+     * @param handler  {@code Object handle(TransportContext context)}
+     * @return TransportResult
+     * @throws dev.fuxing.exception.TransportException auto convert into {error: {}}
+     * @throws Exception                               auto convert into {error: {type: "UnknownException", ...}}
+     * @see Object auto convert into {data: ...}
+     * @see TransportResult auto convert into {...}
+     * @see TransportList auto convert into {data: [], cursor: {}}
      */
     static TransportResult handle(Request request, Response response, Handler handler) throws Exception {
         Object result = handler.handle(new TransportContext(request, response));

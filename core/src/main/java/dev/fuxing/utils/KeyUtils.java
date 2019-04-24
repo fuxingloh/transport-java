@@ -97,7 +97,7 @@ public final class KeyUtils {
      * <p>
      * See spec: https://github.com/ulid/spec
      *
-     * @return ULID in String, uppercase & sortable
+     * @return ULID in String, uppercase and sortable
      */
     public static String nextULID() {
         return ULID_INSTANCE.nextULID(System.currentTimeMillis());
@@ -107,7 +107,7 @@ public final class KeyUtils {
      * See also {@link #nextULID()}.
      *
      * @param millis current millis
-     * @return ULID in String, uppercase & sortable
+     * @return ULID in String, uppercase and sortable
      */
     public static String nextULID(long millis) {
         return ULID_INSTANCE.nextULID(millis);
