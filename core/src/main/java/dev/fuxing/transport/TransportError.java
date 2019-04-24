@@ -17,7 +17,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class TransportError {
-    private int code;
+    private Integer code;
     private String type;
     private String message;
 
@@ -39,11 +39,11 @@ public final class TransportError {
     /**
      * @return code, following status code
      */
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 
-    public void setCode(int code) {
+    public void setCode(Integer code) {
         this.code = code;
     }
 

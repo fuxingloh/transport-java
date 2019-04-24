@@ -45,4 +45,8 @@ public final class UnknownException extends TransportException {
     public UnknownException(Throwable throwable) {
         super(500, UnknownException.class, throwable.getMessage(), throwable);
     }
+
+    private UnknownException(String message) {
+        super(500, UnknownException.class, message);
+    }
 }
