@@ -2,14 +2,20 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="transport-java.exception.main" target="11" />
+      <module name="transport-java.exception.test" target="11" />
       <module name="transport-java.json.main" target="1.8" />
       <module name="transport-java.json.test" target="1.8" />
       <module name="transport-java.main" target="1.8" />
+      <module name="transport-java.model.main" target="11" />
+      <module name="transport-java.model.test" target="11" />
       <module name="transport-java.notification.main" target="1.8" />
       <module name="transport-java.notification.test" target="1.8" />
       <module name="transport-java.test" target="1.8" />
       <module name="transport-java.utils.main" target="1.8" />
       <module name="transport-java.utils.test" target="1.8" />
+      <module name="transport-java.validator.main" target="11" />
+      <module name="transport-java.validator.test" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

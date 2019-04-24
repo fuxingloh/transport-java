@@ -2,12 +2,6 @@ rootProject.name = 'transport-java'
 
 include 'core'
 
-include 'model'
-
-include 'exception'
-
-include 'validator'
-
 include 'client'
 
 include 'service'
