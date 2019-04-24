@@ -4,11 +4,11 @@
 **License:** Apache 2.0<br>
 **JDK:** Java 11
 
-Very very very opinionated json communication protocol between your services.
+A very very very opinionated json communication protocol between your services.
 
 ## Features
-* JSON Model
-* Exception handling
+* JSON
+* Exception Handling
 * Data Validator
 * PubSub: Queue, Notification
 * Client
@@ -18,11 +18,8 @@ Very very very opinionated json communication protocol between your services.
 Hosted in Maven Central.
 
 ```groovy
-// Transport Core Utils
+// Transport Core
 compile group: 'dev.fuxing', name: 'transport-core', version: '1.0-SNAPSHOT'
-compile group: 'dev.fuxing', name: 'transport-model', version: '1.0-SNAPSHOT'
-compile group: 'dev.fuxing', name: 'transport-exception', version: '1.0-SNAPSHOT'
-compile group: 'dev.fuxing', name: 'transport-validator', version: '1.0-SNAPSHOT'
 
 // Transport Communicator
 compile group: 'dev.fuxing', name: 'transport-service', version: '1.0-SNAPSHOT'

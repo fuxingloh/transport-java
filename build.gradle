@@ -15,13 +15,13 @@ subprojects {
     apply plugin: 'maven'
 
     group 'dev.fuxing'
-    version '0.2.0'
+    version '0.1.0-SNAPSHOT'
 
     ext.jUnitVersion = '5.4.2'
     ext.guiceVersion = '4.2.2'
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility = 1.11
+    targetCompatibility = 1.11
 
     compileJava.options.encoding = 'UTF-8'
     compileTestJava.options.encoding = 'UTF-8'
@@ -77,21 +77,21 @@ subprojects {
                     artifactId = rootProject.name + '-' + project.name
 
                     project {
-                        name rootProject.name + '-' + project.name
-                        description project.description
+                        name 'transport-' + project.name
+                        description 'Very very very opinionated json communication protocol between your services.'
                         packaging 'jar'
-                        url 'https://github.com/fuxingloh/airtable'
+                        url 'https://github.com/fuxingloh/transport-java'
 
                         scm {
-                            connection 'scm:git:https://github.com/fuxingloh/airtable.git'
-                            developerConnection 'scm:git:git@github.com:fuxingloh/airtable.git'
-                            url 'https://github.com/fuxingloh/airtable.git'
+                            connection 'scm:git:https://github.com/fuxingloh/transport-java.git'
+                            developerConnection 'scm:git:git@github.com:fuxingloh/transport-java.git'
+                            url 'https://github.com/fuxingloh/transport-java.git'
                         }
 
                         licenses {
                             license {
                                 name 'Apache License 2.0'
-                                url 'https://github.com/fuxingloh/airtable/blob/master/LICENSE'
+                                url 'https://github.com/fuxingloh/transport-java/blob/master/LICENSE'
                                 distribution 'repo'
                             }
                         }
