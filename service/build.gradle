@@ -1,0 +1,6 @@
+dependencies {
+    compile project(':core')
+    compile group: 'com.sparkjava', name: 'spark-core', version: '2.9.0'
+    
+    testCompile project(':client')
+}
