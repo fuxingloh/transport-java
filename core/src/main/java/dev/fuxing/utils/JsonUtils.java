@@ -151,6 +151,14 @@ public final class JsonUtils {
         }
     }
 
+    public static <T> T bytesToObject(byte[] bytes, Class<T> clazz) {
+        try {
+            return objectMapper.readValue(bytes, clazz);
+        } catch (IOException e) {
+            throw new JsonException(e);
+        }
+    }
+
     /**
      * @param object POJO into JsonNode
      * @param <T>    Node Type

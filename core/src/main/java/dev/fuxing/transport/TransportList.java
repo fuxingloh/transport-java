@@ -23,7 +23,7 @@ public class TransportList<T> extends ArrayList<T> {
     private Map<String, String> cursor;
 
     /**
-     * TransportList without next
+     * TransportList without cursor
      *
      * @param c collection to copy over
      */
@@ -32,7 +32,7 @@ public class TransportList<T> extends ArrayList<T> {
     }
 
     /**
-     * TransportList without next
+     * TransportList without cursor
      *
      * @param i      iterable to copy and map over
      * @param mapper mapper to map data
@@ -43,7 +43,7 @@ public class TransportList<T> extends ArrayList<T> {
     }
 
     /**
-     * TransportList without next
+     * TransportList without cursor
      *
      * @param c      collection to copy and map over
      * @param mapper mapper to map data
@@ -56,8 +56,8 @@ public class TransportList<T> extends ArrayList<T> {
     /**
      * @param c               collection to copy and map over
      * @param mapper          to map object into T
-     * @param size            if == collection.size will next mapper
-     * @param builderConsumer for next
+     * @param size            if == collection.size next cursor will be created
+     * @param builderConsumer for building next cursor
      * @param <O>             Object to map from
      */
     public <O> TransportList(Collection<O> c, Function<O, T> mapper, int size, BiConsumer<T, TransportCursor.Builder> builderConsumer) {
@@ -75,8 +75,8 @@ public class TransportList<T> extends ArrayList<T> {
     /**
      * @param i               iterable to copy and map over
      * @param mapper          to map object into T
-     * @param size            if == collection.size will next mapper
-     * @param builderConsumer for next
+     * @param size            if == collection.size next cursor will be created
+     * @param builderConsumer for building next cursor
      * @param <O>             Object to map from
      */
     public <O> TransportList(Iterable<O> i, Function<O, T> mapper, int size, BiConsumer<T, TransportCursor.Builder> builderConsumer) {
@@ -101,9 +101,11 @@ public class TransportList<T> extends ArrayList<T> {
     }
 
     /**
+     * Single key-value cursor
+     *
      * @param c      collection to copy over
-     * @param key    of next
-     * @param object of next, nullable
+     * @param key    for single key-value cursor
+     * @param object for single key-value cursor, nullable
      */
     public TransportList(Collection<? extends T> c, String key, @Nullable Object object) {
         super(c);
@@ -117,23 +119,23 @@ public class TransportList<T> extends ArrayList<T> {
     }
 
     /**
-     * @param c          collection to copy over
-     * @param size       if == collection.size will next mapper
-     * @param nextMapper to map the last into next
+     * @param c            collection to copy over
+     * @param size         if == collection.size, next cursor will be created
+     * @param cursorMapper to map the last into a cursor
      */
-    public TransportList(Collection<? extends T> c, int size, Function<T, TransportCursor> nextMapper) {
+    public TransportList(Collection<? extends T> c, int size, Function<T, TransportCursor> cursorMapper) {
         super(c);
         if (size() == size) {
             this.cursor = Map.of(
-                    "next", nextMapper.apply(get(size - 1)).toBase64()
+                    "next", cursorMapper.apply(get(size - 1)).toBase64()
             );
         }
     }
 
     /**
      * @param c               collection to copy over
-     * @param size            if == collection.size will next mapper
-     * @param builderConsumer to inject next param
+     * @param size            if == collection.size, next cursor will be created
+     * @param builderConsumer for building next cursor
      */
     public TransportList(Collection<? extends T> c, int size, BiConsumer<T, TransportCursor.Builder> builderConsumer) {
         super(c);
@@ -167,7 +169,7 @@ public class TransportList<T> extends ArrayList<T> {
     }
 
     /**
-     * @param function using current TransportList with cursor to get the Next TransportList
+     * @param function using current TransportList with cursor to get the next TransportList
      * @return Iterator of TransportList Chaining
      */
     public Iterator<T> toIterator(Function<String, TransportList<T>> function) {
