@@ -1,4 +1,4 @@
-package dev.fuxing.model;
+package dev.fuxing.transport;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import dev.fuxing.exception.ParamException;

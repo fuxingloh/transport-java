@@ -1,4 +1,4 @@
-package dev.fuxing.model;
+package dev.fuxing.transport;
 
 /**
  * Sort by.

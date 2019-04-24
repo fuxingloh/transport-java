@@ -1,6 +1,6 @@
 package dev.fuxing.exception;
 
-import dev.fuxing.model.TransportError;
+import dev.fuxing.transport.TransportError;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
