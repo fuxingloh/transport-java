@@ -84,7 +84,7 @@ subprojects {
                     authentication(userName: nexus_user, password: nexus_password)
                 }
                 pom {
-                    artifactId = rootProject.name + '-' + project.name
+                    artifactId = 'transport-' + project.name
 
                     project {
                         name 'transport-' + project.name
