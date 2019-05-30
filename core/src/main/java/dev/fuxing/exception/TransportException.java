@@ -1,5 +1,6 @@
 package dev.fuxing.exception;
 
+import com.typesafe.config.ConfigFactory;
 import dev.fuxing.transport.TransportError;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -18,7 +19,12 @@ import java.util.List;
  * Time: 12:42 PM
  */
 public class TransportException extends RuntimeException {
-    public static final String NAMESPACE = "err.fuxing.dev/";
+    public static final String DOMAIN;
+
+    static {
+        String domain = ConfigFactory.load().getString("exception.domain");
+        DOMAIN = domain.replaceAll("/+$", "") + "/";
+    }
 
     private final int code;
     private final String type;
@@ -53,7 +59,7 @@ public class TransportException extends RuntimeException {
     public TransportException(int code, Class<? extends TransportException> clazz, String message, Throwable throwable) {
         super(message, throwable);
         this.code = code;
-        this.type = NAMESPACE + clazz.getName();
+        this.type = getType(clazz);
         this.message = message;
 
         if (throwable != null) {
@@ -89,7 +95,7 @@ public class TransportException extends RuntimeException {
      * @return class name, after the namespace
      */
     public String getClassName() {
-        return StringUtils.removeStart(type, NAMESPACE);
+        return StringUtils.removeStart(type, DOMAIN);
     }
 
     /**
@@ -152,9 +158,13 @@ public class TransportException extends RuntimeException {
     /**
      * @param clazz of the exception
      * @param <T>   exception type
-     * @return type of the error with namespace and it's an url destination
+     * @return type of the error with domain and it's an url destination
      */
     public static <T extends TransportException> String getType(Class<T> clazz) {
-        return NAMESPACE + clazz.getName();
+        if (clazz.getPackageName().equals("dev.fuxing.exception")) {
+            return DOMAIN + clazz.getSimpleName();
+        }
+
+        return DOMAIN + clazz.getName();
     }
 }

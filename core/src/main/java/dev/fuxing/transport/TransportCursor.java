@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Cursor contains the all the information for the next list of objects.
@@ -157,6 +158,7 @@ public class TransportCursor {
          * @param value value, all converted to string
          */
         public void put(String key, Object value) {
+            Objects.requireNonNull(value, "Value required.");
             this.parameters.put(key, value.toString());
         }
 

@@ -99,5 +99,4 @@ public final class CompareUtils {
     public static boolean after(long beforeMillis, Duration elapsed, long afterMillis) {
         return beforeMillis + elapsed.toMillis() < afterMillis;
     }
-
 }

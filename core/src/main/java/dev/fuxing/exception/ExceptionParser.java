@@ -11,6 +11,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
+ * For future improvement of auto registration of Exception, Reflect APIs should be used to auto detect and construct the object.
+ * <p>
  * Created by: Fuxing
  * Date: 22/8/2017
  * Time: 11:39 AM

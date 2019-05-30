@@ -45,6 +45,8 @@ public final class KeyUtils {
 
     private static final ULID ULID_INSTANCE = new ULID();
 
+    public static final String BASE64_URL_SAFE_REGEX = "^[a-zA-Z0-9_-]{43}$";
+
     /**
      * UUID Value Regex for @Pattern validator
      */

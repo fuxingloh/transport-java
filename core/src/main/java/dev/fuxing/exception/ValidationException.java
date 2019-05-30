@@ -65,7 +65,7 @@ public class ValidationException extends TransportException {
     }
 
     /**
-     * Use Hibernate validator for violations validation
+     * Uses Hibernate validator for violations validation
      *
      * @param object to validate
      * @param groups optional group or list of groups targeted for validation
@@ -84,7 +84,19 @@ public class ValidationException extends TransportException {
                 })
                 .collect(Collectors.toList());
         throw new ValidationException(reasons, object);
+    }
 
+    /**
+     * Uses Hibernate validator for violations validation
+     *
+     * @param object to validate
+     * @param groups optional group or list of groups targeted for validation
+     * @param <T>    the type of the object to validate
+     * @return whether object is valid
+     */
+    public static <T> boolean isValid(T object, Class<?>... groups) {
+        Set<ConstraintViolation<T>> violations = validator.validate(object, groups);
+        return violations.isEmpty();
     }
 
     /**
