@@ -58,6 +58,37 @@ public final class JsonUtils {
     }
 
     /**
+     * Merge node changes into Object
+     *
+     * @param object original object
+     * @param patch  node to merge into object
+     * @param <T>    Type of Object
+     * @return Merged Object
+     */
+    public static <T> T merge(T object, JsonNode patch) {
+        try {
+            return objectMapper.readerForUpdating(object).readValue(patch);
+        } catch (IOException e) {
+            throw new JsonException(e);
+        }
+    }
+
+    /**
+     * Merge node changes into Object
+     *
+     * @param object node for original object to be patched
+     * @param patch  node to merge
+     * @return Merged Node
+     */
+    public static JsonNode merge(JsonNode object, JsonNode patch) {
+        try {
+            return objectMapper.readerForUpdating(object).readValue(patch);
+        } catch (IOException e) {
+            throw new JsonException(e);
+        }
+    }
+
+    /**
      * Exactly the same as
      * <pre>
      *     ObjectNode root = createObjectNode();
