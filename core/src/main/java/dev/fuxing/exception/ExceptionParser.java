@@ -30,6 +30,7 @@ public final class ExceptionParser {
             Class.forName(ConflictException.class.getName());
             Class.forName(ForbiddenException.class.getName());
             Class.forName(JsonException.class.getName());
+            Class.forName(NotFoundException.class.getName());
             Class.forName(RateLimitException.class.getName());
             Class.forName(OfflineException.class.getName());
             Class.forName(ParamException.class.getName());
