@@ -3,6 +3,7 @@ package dev.fuxing.transport;
 import com.fasterxml.jackson.databind.JsonNode;
 import dev.fuxing.exception.ParamException;
 import dev.fuxing.utils.JsonUtils;
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
@@ -22,6 +23,7 @@ import java.util.Objects;
  * Time: 3:04 PM
  */
 public class TransportCursor {
+    public static final TransportCursor EMPTY = new TransportCursor(Map.of());
     private static final Base64.Encoder ENCODER = Base64.getUrlEncoder().withoutPadding();
     private static final Base64.Decoder DECODER = Base64.getUrlDecoder();
 
@@ -53,6 +55,12 @@ public class TransportCursor {
      */
     public String get(String key, String defaultValue) {
         return parameter.getOrDefault(key, defaultValue);
+    }
+
+    public  <E extends Enum<E>> E getEnum(String key, Class<E> clazz, E defaultValue) {
+        E num = EnumUtils.getEnum(clazz, get(key));
+        if (num != null) return num;
+        return defaultValue;
     }
 
     /**

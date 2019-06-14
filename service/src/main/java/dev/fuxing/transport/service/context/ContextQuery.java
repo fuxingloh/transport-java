@@ -2,7 +2,6 @@ package dev.fuxing.transport.service.context;
 
 import dev.fuxing.exception.BadRequestException;
 import dev.fuxing.exception.ParamException;
-import dev.fuxing.transport.TransportCursor;
 import dev.fuxing.transport.TransportSort;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -209,52 +208,17 @@ public interface ContextQuery extends Context {
     }
 
     /**
-     * @param key          to get in cursor
-     * @param defaultValue default value
-     * @return a single key in cursor or {@code null} if not found
-     */
-    @Nullable
-    default String queryCursorString(String key, String defaultValue) {
-        TransportCursor cursor = queryCursor();
-        if (cursor == null) return defaultValue;
-
-        return cursor.get(key, defaultValue);
-    }
-
-    /**
-     * cursor itself will not determine the direction, it is stateless
-     * other querystring will determine the direction
-     *
-     * @return Cursor called 'cursor'
-     */
-    @Nullable
-    default TransportCursor queryCursor() {
-        return queryCursor("cursor");
-    }
-
-    /**
-     * @param name cursor name, e.g. next, prev
-     * @return Cursor, {@code null} if don't exist
-     */
-    @Nullable
-    default TransportCursor queryCursor(String name) {
-        String cursor = queryString(name, null);
-        if (StringUtils.isBlank(cursor)) return null;
-
-        return TransportCursor.fromBase64(cursor);
-    }
-
-    /**
      * Will return default if not present or enum match not found.
      *
-     * @param name  of enum
-     * @param clazz to bound Object to
+     * @param name         of enum
+     * @param clazz        to bound Object to
      * @param defaultValue default enum value
-     * @param <E>   Enum class
+     * @param <E>          Enum class
      * @return enum
      */
-    default <E extends Enum<E>> E queryEnum(String name, Class<E> clazz, E defaultValue) {
-        E num = EnumUtils.getEnum(clazz, queryString(name, defaultValue.name()));
+    @Nullable
+    default <E extends Enum<E>> E queryEnum(String name, Class<E> clazz, @Nullable E defaultValue) {
+        E num = EnumUtils.getEnum(clazz, queryString(name, null));
         if (num != null) return num;
         return defaultValue;
     }
