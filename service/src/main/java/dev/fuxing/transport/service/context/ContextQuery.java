@@ -233,6 +233,7 @@ public interface ContextQuery extends Context {
         E num = EnumUtils.getEnum(clazz, queryString(name));
         if (num != null) return num;
 
+
         throw new BadRequestException("Enum " + name + " is invalid.");
     }
 }

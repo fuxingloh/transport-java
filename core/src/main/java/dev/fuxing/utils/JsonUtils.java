@@ -8,7 +8,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapType;
 import dev.fuxing.exception.JsonException;
+import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
@@ -227,6 +229,13 @@ public final class JsonUtils {
         } catch (IOException e) {
             throw new JsonException(e);
         }
+    }
+
+    @Nullable
+    public static <T> T toEnum(String value, Class<T> clazz) {
+        if (StringUtils.isBlank(value)) return null;
+        JsonNode node = JsonUtils.valueToTree(value);
+        return toObject(node, clazz);
     }
 
     @SuppressWarnings("Duplicates")
