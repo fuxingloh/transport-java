@@ -108,7 +108,7 @@ public interface ContextQuery extends Context {
      */
     default double queryDouble(String name, double defaultValue) throws ParamException {
         try {
-            String value = queryString(name);
+            String value = request().queryParams(name);
             if (StringUtils.isBlank(value)) return defaultValue;
             return Double.parseDouble(value);
         } catch (NumberFormatException e) {

@@ -57,7 +57,7 @@ public class TransportCursor {
         return parameter.getOrDefault(key, defaultValue);
     }
 
-    public  <E extends Enum<E>> E getEnum(String key, Class<E> clazz, E defaultValue) {
+    public <E extends Enum<E>> E getEnum(String key, Class<E> clazz, E defaultValue) {
         E num = EnumUtils.getEnum(clazz, get(key));
         if (num != null) return num;
         return defaultValue;
@@ -128,6 +128,41 @@ public class TransportCursor {
 
         try {
             return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            throw new ParamException(key);
+        }
+    }
+
+    /**
+     * @param key of value
+     * @return found or defaultValue
+     * @throws ParamException if cannot be parsed
+     */
+    @Nullable
+    public Double getDouble(String key) {
+        String value = get(key);
+        if (value == null) throw new ParamException(key);
+
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            throw new ParamException(key);
+        }
+    }
+
+    /**
+     * @param key          of value
+     * @param defaultValue to return, Nullable
+     * @return found or defaultValue
+     * @throws ParamException if cannot be parsed
+     */
+    @Nullable
+    public Double getDouble(String key, @Nullable Double defaultValue) {
+        String value = get(key);
+        if (value == null) return defaultValue;
+
+        try {
+            return Double.parseDouble(value);
         } catch (NumberFormatException e) {
             throw new ParamException(key);
         }
