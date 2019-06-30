@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapType;
-import dev.fuxing.exception.JsonException;
+import dev.fuxing.err.JsonException;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;

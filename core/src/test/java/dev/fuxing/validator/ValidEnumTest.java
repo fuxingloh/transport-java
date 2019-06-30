@@ -1,6 +1,6 @@
 package dev.fuxing.validator;
 
-import dev.fuxing.exception.ValidationException;
+import dev.fuxing.err.ValidationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

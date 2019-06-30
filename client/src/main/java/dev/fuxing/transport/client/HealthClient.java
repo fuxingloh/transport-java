@@ -1,7 +1,7 @@
 package dev.fuxing.transport.client;
 
 
-import dev.fuxing.exception.StatusException;
+import dev.fuxing.err.StatusException;
 import org.apache.http.client.fluent.Request;
 
 /**
@@ -30,7 +30,7 @@ public class HealthClient {
 
     /**
      * @throws StatusException                         if not 200
-     * @throws dev.fuxing.exception.TransportException if is any of the transport error
+     * @throws dev.fuxing.err.TransportException if is any of the transport error
      */
     public void check() {
         new TransportRequest(Request::Get, url)

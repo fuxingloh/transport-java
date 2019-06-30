@@ -1,7 +1,7 @@
 package dev.fuxing.transport;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import dev.fuxing.exception.ParamException;
+import dev.fuxing.err.ParamException;
 import dev.fuxing.utils.JsonUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;

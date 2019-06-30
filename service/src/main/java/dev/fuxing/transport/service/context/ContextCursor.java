@@ -1,6 +1,6 @@
 package dev.fuxing.transport.service.context;
 
-import dev.fuxing.exception.ParamException;
+import dev.fuxing.err.ParamException;
 import dev.fuxing.transport.TransportCursor;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;

@@ -2,7 +2,7 @@ package dev.fuxing.transport.client;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
-import dev.fuxing.exception.StatusException;
+import dev.fuxing.err.StatusException;
 import dev.fuxing.transport.TransportList;
 import dev.fuxing.utils.JsonUtils;
 import org.apache.http.Header;

@@ -1,6 +1,6 @@
 package dev.fuxing.transport.service.context;
 
-import dev.fuxing.exception.ParamException;
+import dev.fuxing.err.ParamException;
 import spark.Request;
 import spark.Response;
 

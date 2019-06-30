@@ -8,3 +8,8 @@ include 'service'
 
 include 'pubsub'
 
+include 'jpa'
+include 'jpa:postgres'
+
+include 'elastic'
+

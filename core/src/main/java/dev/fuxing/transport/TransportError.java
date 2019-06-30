@@ -3,7 +3,7 @@ package dev.fuxing.transport;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
-import dev.fuxing.exception.TransportException;
+import dev.fuxing.err.TransportException;
 import dev.fuxing.utils.JsonUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
