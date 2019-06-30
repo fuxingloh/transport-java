@@ -31,10 +31,6 @@ public class ElasticQuery {
         this.sort = sort;
     }
 
-    public static ElasticDSL getDSL() {
-        return DSL;
-    }
-
     public int getFrom() {
         return from;
     }
