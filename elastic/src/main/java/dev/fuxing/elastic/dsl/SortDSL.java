@@ -15,6 +15,7 @@ public interface SortDSL extends AbstractDSL {
     /**
      * https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-sort.html
      *
+     * @param field  to sort by
      * @param latLng center
      * @return { "location.latLng" : "lat,lng", "order" : "asc", "unit" : "m", "mode" : "min", "distance_type" : "plane" }
      */

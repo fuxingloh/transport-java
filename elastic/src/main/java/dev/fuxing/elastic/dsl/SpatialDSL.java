@@ -90,7 +90,8 @@ public interface SpatialDSL extends AbstractDSL {
     }
 
     /**
-     * @return centroid of points
+     * @param points to find centroid
+     * @return centroid point
      */
     static double[] getCentroid(List<String> points) {
         double centroidLat = 0, centroidLng = 0;

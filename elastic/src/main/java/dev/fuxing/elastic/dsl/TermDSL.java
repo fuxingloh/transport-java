@@ -44,7 +44,7 @@ public interface TermDSL extends AbstractDSL {
     }
 
     /**
-     * E.g. createdDate > 1000 is "createdDate", "gt", 1000
+     * E.g. createdDate &gt; 1000 is "createdDate", "gt", 1000
      *
      * @param name     name of field to filter
      * @param operator operator in english form, e.g. gte, lt
@@ -60,7 +60,7 @@ public interface TermDSL extends AbstractDSL {
     }
 
     /**
-     * E.g. createdDate > 1000 is "createdDate", "gt", 1000
+     * E.g. createdDate &gt; 1000 is "createdDate", "gt", 1000
      *
      * @param name     name of field to filter
      * @param operator operator in english form, e.g. gte, lt
