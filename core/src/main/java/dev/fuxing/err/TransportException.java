@@ -161,7 +161,7 @@ public class TransportException extends RuntimeException {
      * @return type of the error with domain and it's an url destination
      */
     public static <T extends TransportException> String getType(Class<T> clazz) {
-        if (clazz.getPackageName().equals("dev.fuxing.exception")) {
+        if (clazz.getPackageName().equals("dev.fuxing.err")) {
             return DOMAIN + clazz.getSimpleName();
         }
 

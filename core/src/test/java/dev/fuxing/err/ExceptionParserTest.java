@@ -18,12 +18,12 @@ class ExceptionParserTest {
     @Test
     void root() {
         String url = TransportException.getType(RateLimitException.class);
-        Assertions.assertEquals(url, "err.fuxing.dev/RateLimitException");
+        Assertions.assertEquals("err.fuxing.dev/RateLimitException", url);
     }
 
     @Test
     void custom() {
         String url = TransportException.getType(CustomException.class);
-        Assertions.assertEquals(url, "err.fuxing.dev/dev.fuxing.exception.custom.CustomException");
+        Assertions.assertEquals("err.fuxing.dev/dev.fuxing.err.custom.CustomException", url);
     }
 }

@@ -52,58 +52,25 @@ public class ScriptRunner {
     private String delimiter = DEFAULT_DELIMITER;
     private boolean fullLineDelimiter = false;
 
-    /**
-     * Default constructor.
-     *
-     * @param connection
-     * @param autoCommit
-     * @param stopOnError
-     */
     public ScriptRunner(Connection connection, boolean autoCommit, boolean stopOnError) {
         this.connection = connection;
         this.autoCommit = autoCommit;
         this.stopOnError = stopOnError;
     }
 
-    /**
-     * @param delimiter
-     * @param fullLineDelimiter
-     */
     public void setDelimiter(String delimiter, boolean fullLineDelimiter) {
         this.delimiter = delimiter;
         this.fullLineDelimiter = fullLineDelimiter;
     }
 
-    /**
-     * Setter for logWriter property.
-     *
-     * @param logWriter
-     *        - the new value of the logWriter property
-     */
     public void setLogWriter(PrintWriter logWriter) {
         this.logWriter = logWriter;
     }
 
-    /**
-     * Setter for errorLogWriter property.
-     *
-     * @param errorLogWriter
-     *        - the new value of the errorLogWriter property
-     */
     public void setErrorLogWriter(PrintWriter errorLogWriter) {
         this.errorLogWriter = errorLogWriter;
     }
 
-    /**
-     * Runs an SQL script (read in using the Reader parameter).
-     *
-     * @param reader
-     *        - the source of the script
-     * @throws SQLException
-     *         if any SQL errors occur
-     * @throws IOException
-     *         if there is an error reading from the Reader
-     */
     public void runScript(Reader reader) throws IOException, SQLException {
         try {
             boolean originalAutoCommit = connection.getAutoCommit();
@@ -115,27 +82,13 @@ public class ScriptRunner {
             } finally {
                 connection.setAutoCommit(originalAutoCommit);
             }
-        } catch (IOException e) {
-            throw e;
-        } catch (SQLException e) {
+        } catch (IOException | SQLException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error running script.  Cause: " + e, e);
         }
     }
 
-    /**
-     * Runs an SQL script (read in using the Reader parameter) using the connection passed in.
-     *
-     * @param conn
-     *        - the connection to use for the script
-     * @param reader
-     *        - the source of the script
-     * @throws SQLException
-     *         if any SQL errors occur
-     * @throws IOException
-     *         if there is an error reading from the Reader
-     */
     private void runScript(Connection conn, Reader reader) throws IOException, SQLException {
         StringBuffer command = null;
         try {
@@ -243,12 +196,7 @@ public class ScriptRunner {
             if (!autoCommit) {
                 conn.commit();
             }
-        } catch (SQLException e) {
-            e.fillInStackTrace();
-            printlnError("Error executing: " + command);
-            printlnError(e);
-            throw e;
-        } catch (IOException e) {
+        } catch (SQLException | IOException e) {
             e.fillInStackTrace();
             printlnError("Error executing: " + command);
             printlnError(e);
