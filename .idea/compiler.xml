@@ -4,6 +4,8 @@
     <bytecodeTargetLevel>
       <module name="transport-java.exception.main" target="11" />
       <module name="transport-java.exception.test" target="11" />
+      <module name="transport-java.jpa.postgres.main" target="11" />
+      <module name="transport-java.jpa.postgres.test" target="11" />
       <module name="transport-java.json.main" target="1.8" />
       <module name="transport-java.json.test" target="1.8" />
       <module name="transport-java.main" target="1.8" />

@@ -29,13 +29,15 @@ public final class PostgresModule extends AbstractModule {
     private static final Logger logger = LoggerFactory.getLogger(PostgresModule.class);
 
     private final String unitName;
+    private final Config config;
 
-    public PostgresModule(String unitName) {
+    public PostgresModule(String unitName, String configName) {
         this.unitName = unitName;
+        this.config = ConfigFactory.load().getConfig(configName);
     }
 
-    public PostgresModule() {
-        this.unitName = HibernateUtils.DEFAULT_PERSISTENCE_UNIT;
+    public PostgresModule(String configName) {
+        this(HibernateUtils.DEFAULT_PERSISTENCE_UNIT, configName);
     }
 
     @Override
@@ -44,20 +46,20 @@ public final class PostgresModule extends AbstractModule {
     }
 
     /**
-     * Wait for database to be read before starting postgres module
+     * This wait for database to be online read before starting postgres module
      * Setup postgres database module
      */
     @Inject
     void setupDatabase() {
-        Config postgres = ConfigFactory.load().getConfig("postgres");
-
         try {
             // Wait for url to be ready
-            String url = postgres.getString("url");
+            String url = config.getString("url");
 
-            // If this fails, most likely the endpoint cannot be accessed.
-            // If hosted on RDS, please check the security group setting.
-            HealthUtils.host(url.substring(5), Duration.ofSeconds(180));
+            if (config.hasPath("waitFor") && config.getBoolean("waitFor")) {
+                // If this fails, most likely the endpoint cannot be accessed.
+                // If hosted on RDS, please check the security group setting.
+                HealthUtils.host(url.substring(5), Duration.ofSeconds(180));
+            }
 
             Map<String, String> properties = new HashMap<>();
             properties.put("hibernate.dialect", "dev.fuxing.postgres.JsonPostgreSQLDialect");
@@ -65,13 +67,13 @@ public final class PostgresModule extends AbstractModule {
             properties.put("hibernate.hikari.dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource");
 
             properties.put("hibernate.hikari.dataSource.url", url);
-            properties.put("hibernate.hikari.dataSource.user", postgres.getString("username"));
-            properties.put("hibernate.hikari.dataSource.password", postgres.getString("password"));
+            properties.put("hibernate.hikari.dataSource.user", config.getString("username"));
+            properties.put("hibernate.hikari.dataSource.password", config.getString("password"));
 
             // Disable by default due to this error: found [bpchar (Types#CHAR)], but expecting [char(36) (Types#VARCHAR)]
-            String autoCreate = postgres.getBoolean("autoCreate") ? "update" : "none";
+            String autoCreate = config.getBoolean("autoCreate") ? "update" : "none";
             properties.put("hibernate.hbm2ddl.auto", autoCreate);
-            properties.put("hibernate.hikari.maximumPoolSize", postgres.getString("maxPoolSize"));
+            properties.put("hibernate.hikari.maximumPoolSize", config.getString("maxPoolSize"));
 
             setupFactory(properties);
         } catch (Exception e) {
