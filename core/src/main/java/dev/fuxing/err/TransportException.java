@@ -47,7 +47,7 @@ public class TransportException extends RuntimeException {
      * @param message error message in detail, safe for user
      */
     public TransportException(int code, Class<? extends TransportException> clazz, String message) {
-        this(code, clazz, message, null);
+        this(code, clazz, message, (Exception) null);
     }
 
     /**
@@ -67,6 +67,14 @@ public class TransportException extends RuntimeException {
         } else {
             this.stacktrace = null;
         }
+    }
+
+    public TransportException(int code, Class<? extends TransportException> clazz, String message, String stacktrace) {
+        super(message);
+        this.code = code;
+        this.type = getType(clazz);
+        this.message = message;
+        this.stacktrace = stacktrace;
     }
 
     protected TransportException(int code, String type, String message, String stacktrace) {

@@ -1,6 +1,5 @@
 package dev.fuxing.transport.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.ConfigFactory;
 import dev.fuxing.err.StatusException;
@@ -25,12 +24,11 @@ import java.util.function.Function;
  * Date: 9/12/2016
  * Time: 6:47 PM
  */
-public class TransportServer {
+public class TransportServer implements TransportPath {
     protected static final Logger logger = LoggerFactory.getLogger(TransportServer.class);
-    protected static final ObjectMapper objectMapper = TransportService.objectMapper;
     protected static final String DEFAULT_HEALTH_PATH = "/health/check";
 
-    private final TransportService[] routers;
+    protected final TransportService[] services;
     private boolean started = false;
 
     protected boolean debug = true;
@@ -39,7 +37,7 @@ public class TransportServer {
      * @param services array of routes for spark server to route with
      */
     public TransportServer(TransportService... services) {
-        this.routers = services;
+        this.services = services;
     }
 
     /**
@@ -62,7 +60,7 @@ public class TransportServer {
     }
 
     /**
-     * Start Spark Json Server with given routers
+     * Start Spark Json Server with given services
      * Expected status code spark server should return is
      * 200: ok, no error in request
      * 400: structured error, constructed error from developer
@@ -94,7 +92,7 @@ public class TransportServer {
             }
         });
 
-        // Setup all routers
+        // Setup all services
         setupRouters();
 
         // Default handler for not found
@@ -113,17 +111,17 @@ public class TransportServer {
 
         // Handle all expected exceptions
         handleException();
-        logger.info("Started Spark Server on port: {}", port);
+        logger.info("Started Transport Server on port: {}", port);
         this.started = true;
     }
 
     /**
-     * Setup all the routers by starting them
+     * Setup all the services by starting them
      */
     protected void setupRouters() {
-        for (TransportService router : routers) {
-            router.start();
-            logger.info("Started SparkRouter: {}", router.getClass().getSimpleName());
+        for (TransportService service : services) {
+            service.start();
+            logger.info("Started Service: {}", service.getClass().getSimpleName());
         }
     }
 

@@ -45,7 +45,7 @@ public class TransportCursor {
      * @return string or {@code null} if not found
      */
     public String get(String key) {
-        return parameter.get(key);
+        return get(key, null);
     }
 
     /**
@@ -70,14 +70,7 @@ public class TransportCursor {
      */
     @Nullable
     public Long getLong(String key) {
-        String value = get(key);
-        if (value == null) throw new ParamException(key);
-
-        try {
-            return Long.parseLong(value);
-        } catch (NumberFormatException e) {
-            throw new ParamException(key);
-        }
+        return getLong(key, null);
     }
 
     /**
@@ -105,14 +98,7 @@ public class TransportCursor {
      */
     @Nullable
     public Integer getInt(String key) {
-        String value = get(key);
-        if (value == null) throw new ParamException(key);
-
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            throw new ParamException(key);
-        }
+        return getInt(key, null);
     }
 
     /**
@@ -140,14 +126,7 @@ public class TransportCursor {
      */
     @Nullable
     public Double getDouble(String key) {
-        String value = get(key);
-        if (value == null) throw new ParamException(key);
-
-        try {
-            return Double.parseDouble(value);
-        } catch (NumberFormatException e) {
-            throw new ParamException(key);
-        }
+        return getDouble(key, null);
     }
 
     /**
@@ -205,7 +184,7 @@ public class TransportCursor {
             this.parameters.put(key, value.toString());
         }
 
-        TransportCursor build() {
+        public TransportCursor build() {
             return new TransportCursor(this);
         }
     }

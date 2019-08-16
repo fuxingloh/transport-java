@@ -1,20 +1,26 @@
 package dev.fuxing.jpa;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import dev.fuxing.err.NotFoundException;
 import dev.fuxing.utils.JsonUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Created by: Fuxing
  * Date: 2019-06-12
  * Time: 20:42
  */
-public final class EntityPatcher {
+public final class EntityPatch {
 
     public static <T> JsonBody<T> with(EntityManager entityManager, T entity, JsonNode body) {
+        if (entity == null) {
+            throw new NotFoundException();
+        }
+
         return new JsonBody<>(entityManager, entity, body);
     }
 
@@ -66,31 +72,18 @@ public final class EntityPatcher {
             });
         }
 
-        public JsonBody<T> patch(String name, Consumer<JsonNode> consumer) {
+        private JsonBody<T> patch(String name, Consumer<JsonNode> consumer) {
             if (json.has(name)) {
                 consumer.accept(json.path(name));
             }
             return this;
         }
 
-        public interface NodeConsumer<T> {
-            void accept(T t, JsonNode json);
-        }
-
-        public interface StringConsumer<T> {
-            void accept(T t, String string);
-        }
-
-        public interface LongConsumer<T> {
-            void accept(T t, Long aLong);
-        }
-
-        public interface IntegerConsumer<T> {
-            void accept(T t, Integer integer);
-        }
-
-        public interface EnumConsumer<T, E> {
-            void accept(T t, E aEnum);
+        public <E> JsonBody<T> patch(String name, Function<T, E> function, Consumer<JsonBody<E>> consumer) {
+            JsonNode deepJson = json.path(name);
+            E deepEntity = function.apply(entity);
+            consumer.accept(new JsonBody<>(entityManager, deepEntity, deepJson));
+            return this;
         }
     }
 
@@ -105,8 +98,32 @@ public final class EntityPatcher {
         }
 
         public T persist() {
-            entityManager.persist(entity);
+            return persist(entityManager::persist);
+        }
+
+        public T persist(Consumer<T> consumer) {
+            consumer.accept(entity);
             return entity;
         }
+    }
+
+    public interface NodeConsumer<T> {
+        void accept(T t, JsonNode json);
+    }
+
+    public interface StringConsumer<T> {
+        void accept(T t, String string);
+    }
+
+    public interface LongConsumer<T> {
+        void accept(T t, Long aLong);
+    }
+
+    public interface IntegerConsumer<T> {
+        void accept(T t, Integer integer);
+    }
+
+    public interface EnumConsumer<T, E> {
+        void accept(T t, E aEnum);
     }
 }

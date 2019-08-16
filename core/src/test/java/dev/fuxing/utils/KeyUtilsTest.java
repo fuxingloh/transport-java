@@ -1,7 +1,9 @@
-package dev.fuxing.core;
+package dev.fuxing.utils;
 
-import dev.fuxing.utils.KeyUtils;
+import org.apache.commons.codec.EncoderException;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
 
 /**
  * Created by: Fuxing
@@ -34,5 +36,12 @@ class KeyUtilsTest {
         System.out.println(KeyUtils.createUUID(0, 0, 0, Integer.MIN_VALUE));
         System.out.println(Integer.MIN_VALUE + 2);
         System.out.println(KeyUtils.createUUID(0, 0, 0, Integer.MIN_VALUE + 2));
+    }
+
+    @Test
+    void createBase32() throws IOException, EncoderException {
+        System.out.println(KeyUtils.nextL12());
+        System.out.println(KeyUtils.nextL12());
+        System.out.println(KeyUtils.nextL12().length());
     }
 }

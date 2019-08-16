@@ -34,12 +34,10 @@ public interface Context {
     /**
      * This kinda act as a session data
      *
-     * @param data  to put into session
-     * @param clazz type
-     * @param <T>   type
+     * @param data to put into session
      */
-    default <T> void put(T data, Class<T> clazz) {
-        request().attribute(clazz.getName(), data);
+    default void put(Object data) {
+        request().attribute(data.getClass().getName(), data);
     }
 
     @SuppressWarnings({"unchecked", "WrapperTypeMayBePrimitive"})

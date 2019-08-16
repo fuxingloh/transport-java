@@ -2,19 +2,13 @@
 package dev.fuxing.jpa;
 
 
-import com.fasterxml.jackson.databind.JsonNode;
 import dev.fuxing.err.ExceptionParser;
-import dev.fuxing.transport.TransportCursor;
-import dev.fuxing.transport.TransportList;
-import dev.fuxing.utils.JsonUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
-import java.util.List;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -110,16 +104,13 @@ public class TransactionProvider {
      * @return result
      */
     public <T> Optional<T> optional(boolean readOnly, Function<EntityManager, T> function) {
-        try {
-            T result = reduce(readOnly, function);
-            return Optional.ofNullable(HibernateUtils.clean(result));
-        } catch (NoResultException e) {
-            return Optional.empty();
-        }
+        T result = reduce(readOnly, function);
+        return Optional.ofNullable(HibernateUtils.clean(result));
     }
 
     /**
-     * Run JPA style transaction in functional style with reduce
+     * Run JPA style transaction in functional style with reduce <br>
+     * NoResultException is mapped to {@code null}
      *
      * @param function reduce transaction to apply
      * @param <T>      type of object
@@ -130,7 +121,8 @@ public class TransactionProvider {
     }
 
     /**
-     * Run JPA style transaction in functional style with reduce
+     * Run JPA style transaction in functional style with reduce. <br>
+     * NoResultException is mapped to {@code null}
      *
      * @param readOnly whether this read-only, read only is faster as transaction is turned off
      * @param function reduce transaction to apply
@@ -161,6 +153,8 @@ public class TransactionProvider {
             }
 
             return HibernateUtils.clean(result);
+        } catch (NoResultException e) {
+            return null;
         } catch (Throwable t) {
             if (transaction != null) {
                 try {
@@ -177,13 +171,5 @@ public class TransactionProvider {
                 entityManager.close();
             }
         }
-    }
-
-    public <T> TransportList<JsonNode> reduce(boolean readOnly, Function<EntityManager, List<T>> function, int size, BiConsumer<JsonNode, TransportCursor.Builder> cursorBuilder) {
-        return reduce(readOnly, entityManager -> {
-            List<T> list = function.apply(entityManager);
-            HibernateUtils.clean(list);
-            return new TransportList<>(list, JsonUtils::valueToTree, size, cursorBuilder);
-        });
     }
 }

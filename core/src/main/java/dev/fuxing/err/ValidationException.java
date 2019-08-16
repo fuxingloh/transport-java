@@ -35,14 +35,14 @@ public class ValidationException extends TransportException {
      * @param reason for the validation error
      */
     public ValidationException(String key, String reason) {
-        this("Validation failed on " + key + "\nReason: " + reason + ".");
+        this("Validation failed on " + key + ". \n(" + reason + ")");
     }
 
     /**
      * @param reasons a list of reasons for the validation error
      */
     private ValidationException(List<String> reasons) {
-        this(reasons.size() + " validation failed.\n" + String.join("\n", reasons));
+        this(reasons.size() + " field(s) validation failed. \n(" + String.join("), (", reasons) + ")");
         this.reasons = reasons;
     }
 
@@ -51,9 +51,11 @@ public class ValidationException extends TransportException {
      * @param object  converted into json as Stacktrace
      */
     private ValidationException(List<String> reasons, Object object) {
-        this(reasons.size() + " validation failed.\n" + String.join("\n", reasons), JsonUtils.toString(object));
+        super(422, ValidationException.class,
+                reasons.size() + " field(s) validation failed. \n(" + String.join("), (", reasons) + ")",
+                JsonUtils.toString(object)
+        );
         this.reasons = reasons;
-
     }
 
     private ValidationException(String reason) {

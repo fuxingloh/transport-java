@@ -1,9 +1,17 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven {
+            url 'http://fx.artifactory.munchapp.co.fuxing.dev/artifactory/munch-repos'
+            credentials {
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+            }
+        }
     }
     dependencies {
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
     }
 }
 apply plugin: 'io.codearte.nexus-staging'
@@ -123,4 +131,45 @@ subprojects {
 nexusStaging {
     username = ossrhUser
     password = ossrhPassword
+}
+
+allprojects {
+    apply plugin: "com.jfrog.artifactory"
+    apply plugin: 'maven-publish'
+}
+
+// https://www.jfrog.com/confluence/display/RTF/Gradle+Artifactory+Plugin
+artifactory {
+    contextUrl = "${artifactory_contextUrl}"
+    publish {
+        repository {
+            repoKey = "munch-snapshot"
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+        }
+        defaults {
+            publications('mavenJava')
+        }
+    }
+}
+
+subprojects {
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                artifactId 'transport-' + project.name
+                from components.java
+                artifact(sourcesJar) {
+                    classifier = 'sources'
+                }
+            }
+        }
+    }
+
+    task publishLib {
+        dependsOn 'build'
+        dependsOn 'artifactoryPublish'
+        tasks.findByName('artifactoryPublish').mustRunAfter 'build'
+    }
 }

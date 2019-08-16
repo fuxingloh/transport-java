@@ -212,5 +212,4 @@ public class TransportList<T> extends ArrayList<T> {
 
         return new TransportList<>(collected, cursor);
     }
-
 }
