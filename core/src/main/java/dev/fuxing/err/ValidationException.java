@@ -1,7 +1,6 @@
 package dev.fuxing.err;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import dev.fuxing.utils.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.ConstraintViolation;
@@ -21,6 +20,7 @@ public class ValidationException extends TransportException {
     public static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     private List<String> reasons;
+    private Object object;
 
     static {
         ExceptionParser.register(ValidationException.class, ValidationException::new);
@@ -52,10 +52,10 @@ public class ValidationException extends TransportException {
      */
     private ValidationException(List<String> reasons, Object object) {
         super(422, ValidationException.class,
-                reasons.size() + " field(s) validation failed. \n(" + String.join("), (", reasons) + ")",
-                JsonUtils.toString(object)
+                reasons.size() + " field(s) validation failed. \n(" + String.join("), (", reasons) + ")"
         );
         this.reasons = reasons;
+        this.object = object;
     }
 
     private ValidationException(String reason) {
@@ -64,6 +64,10 @@ public class ValidationException extends TransportException {
 
     public List<String> getReasons() {
         return reasons;
+    }
+
+    public Object getObject() {
+        return object;
     }
 
     /**

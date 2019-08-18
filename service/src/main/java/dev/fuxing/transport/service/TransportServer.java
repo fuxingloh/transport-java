@@ -2,10 +2,7 @@ package dev.fuxing.transport.service;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.ConfigFactory;
-import dev.fuxing.err.StatusException;
-import dev.fuxing.err.TimeoutException;
-import dev.fuxing.err.TransportException;
-import dev.fuxing.err.UnknownException;
+import dev.fuxing.err.*;
 import dev.fuxing.transport.TransportError;
 import dev.fuxing.utils.JsonUtils;
 import org.slf4j.Logger;
@@ -63,7 +60,7 @@ public class TransportServer implements TransportPath {
      * Start Spark Json Server with given services
      * Expected status code spark server should return is
      * 200: ok, no error in request
-     * 400: structured error, constructed error from developer
+     * 400: transport error, constructed error from developer
      * 500: unknown error, all exception
      * 404: not found, endpoint not found
      * <p>
@@ -126,9 +123,9 @@ public class TransportServer implements TransportPath {
     }
 
     /**
-     * @see TransportException to see values and creating custom structured exception
-     * @see UnknownException to see how unknown exception values is mapped
-     * @see TransportError to see how it is formatted
+     * @see TransportException to understand how custom exception is created
+     * @see UnknownException to understand how unknown exception is mapped
+     * @see TransportError how error are formatted in response body
      */
     protected void handleException() {
         logger.info("Adding exception handling for StatusException.");
@@ -138,10 +135,18 @@ public class TransportServer implements TransportPath {
             response.status(exception.getCode());
         });
 
+        logger.info("Adding exception handling for ValidationException.");
+        Spark.exception(ValidationException.class, (exception, request, response) -> {
+            List<String> sources = exception.getSources();
+            logger.debug("Validation exception thrown from sources: {}", sources, exception);
+            logger.debug("Validated object:\n{}", JsonUtils.toString(exception.getObject()));
+            handleException(new TransportContext(request, response), exception);
+        });
+
         logger.info("Adding exception handling for TransportException.");
         Spark.exception(TransportException.class, (exception, request, response) -> {
             List<String> sources = exception.getSources();
-            logger.warn("Structured exception thrown from sources: {}", sources, exception);
+            logger.warn("Transport exception thrown from sources: {}", sources, exception);
             handleException(new TransportContext(request, response), exception);
         });
 
@@ -157,10 +162,10 @@ public class TransportServer implements TransportPath {
                 // Unknown exception
                 logger.warn("Unknown exception thrown", exception);
                 handleException(new TransportContext(request, response), new UnknownException(exception));
-            } catch (TransportException structured) {
+            } catch (TransportException te) {
                 // Mapped exception
-                logger.warn("Structured exception thrown", exception);
-                handleException(new TransportContext(request, response), structured);
+                logger.warn("Transport exception thrown", exception);
+                handleException(new TransportContext(request, response), te);
             }
         });
     }
