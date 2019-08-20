@@ -60,7 +60,7 @@ public final class ExceptionParser {
     }
 
     public static void parse(Exception e) {
-        if (e instanceof TransportException) {
+        if (e.getClass() == TransportException.class) {
             parseTransport((TransportException) e);
         }
 
