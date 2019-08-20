@@ -60,7 +60,7 @@ public final class ExceptionParser {
     }
 
     public static void parse(Exception e) {
-        if (e.getClass() == TransportException.class) {
+        if (e instanceof TransportException) {
             parseTransport((TransportException) e);
         }
 
@@ -74,6 +74,11 @@ public final class ExceptionParser {
      * @throws TransportException thrown
      */
     private static void parseTransport(TransportException e) throws TransportException {
+        // If type is already non abstract, throw immediately
+        if (e.getClass() != TransportException.class) {
+            throw e;
+        }
+
         Consumer<TransportException> consumer = FOUND_CONSUMERS.get(e.getType());
         if (consumer == null && !NOT_FOUND_LIST.contains(e.getType())) {
             try {
