@@ -92,15 +92,16 @@ public final class EntityPatch {
          * This method requires OneToMany relationship to be CASCADE.PERSIST and orphanRemoval = true
          * This method will delete, patch and create entity
          *
-         * @param name     of collection
-         * @param mapper   from entity to list of deep entities
-         * @param keyEqual key predicate function
-         * @param consumer to patch the deep entity
-         * @param <E>      entity type
+         * @param name       of collection
+         * @param toEntities from entity to list of deep entities
+         * @param keyEqual   key predicate function
+         * @param patcher    to patch the deep entity
+         * @param toEntity   from json node to entity
+         * @param <E>        entity type
          * @return chaining of the current instance
          */
-        public <E> JsonBody<T> patch(String name, Class<E> deepClass, Function<T, Collection<E>> mapper, BiPredicate<E, JsonNode> keyEqual, Consumer<EntityPatch.JsonBody<E>> consumer) {
-            Collection<E> deepEntities = mapper.apply(entity);
+        public <E> JsonBody<T> patch(String name, Function<T, Collection<E>> toEntities, BiPredicate<E, JsonNode> keyEqual, Consumer<EntityPatch.JsonBody<E>> patcher, Function<JsonNode, E> toEntity) {
+            Collection<E> deepEntities = toEntities.apply(entity);
             Set<JsonNode> deepBodies = new HashSet<>();
             json.path(name).forEach(deepBodies::add);
 
@@ -112,7 +113,7 @@ public final class EntityPatch {
 
                 // If deepJson exist, patch and remove from existing list
                 if (deepJson.isPresent()) {
-                    consumer.accept(new EntityPatch.JsonBody<>(entityManager, deepEntity, deepJson.get()));
+                    patcher.accept(new EntityPatch.JsonBody<>(entityManager, deepEntity, deepJson.get()));
                     deepBodies.remove(deepJson.get());
                     return false;
                 }
@@ -123,7 +124,7 @@ public final class EntityPatch {
 
             // Add remaining bodies into deep entities
             deepBodies.forEach(jsonNode -> {
-                deepEntities.add(JsonUtils.toObject(jsonNode, deepClass));
+                deepEntities.add(toEntity.apply(jsonNode));
             });
 
             return this;
