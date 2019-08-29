@@ -46,13 +46,6 @@ subprojects {
 
     repositories {
         mavenCentral()
-        maven {
-            url "${nexus_contextUrl}/repository/v22/"
-            credentials {
-                username = "${nexus_user}"
-                password = "${nexus_password}"
-            }
-        }
     }
 
     test {
@@ -87,9 +80,6 @@ subprojects {
                 // Target repository
                 repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                     authentication(userName: ossrhUser, password: ossrhPassword)
-                }
-                snapshotRepository(url: "${nexus_contextUrl}/repository/v22-snapshots/") {
-                    authentication(userName: nexus_user, password: nexus_password)
                 }
                 pom {
                     artifactId = 'transport-' + project.name

@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -105,7 +106,7 @@ public class TransactionProvider {
      */
     public <T> Optional<T> optional(boolean readOnly, Function<EntityManager, T> function) {
         T result = reduce(readOnly, function);
-        return Optional.ofNullable(HibernateUtils.clean(result));
+        return Optional.ofNullable(clean(result));
     }
 
     /**
@@ -152,7 +153,7 @@ public class TransactionProvider {
                 }
             }
 
-            return HibernateUtils.clean(result);
+            return clean(result);
         } catch (NoResultException e) {
             return null;
         } catch (Throwable t) {
@@ -171,5 +172,14 @@ public class TransactionProvider {
                 entityManager.close();
             }
         }
+    }
+
+    private <T> T clean(T object) {
+        if (object instanceof Collection) {
+            for (Object o : (Collection) object) {
+                HibernateUtils.clean(o);
+            }
+        }
+        return HibernateUtils.clean(object);
     }
 }

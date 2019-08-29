@@ -6,6 +6,8 @@ import dev.fuxing.utils.JsonUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
+import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -83,6 +85,47 @@ public final class EntityPatch {
             JsonNode deepJson = json.path(name);
             E deepEntity = function.apply(entity);
             consumer.accept(new JsonBody<>(entityManager, deepEntity, deepJson));
+            return this;
+        }
+
+        /**
+         * This method requires OneToMany relationship to be CASCADE.PERSIST and orphanRemoval = true
+         * This method will delete, patch and create entity
+         *
+         * @param name     of collection
+         * @param mapper   from entity to list of deep entities
+         * @param keyEqual key predicate function
+         * @param consumer to patch the deep entity
+         * @param <E>      entity type
+         * @return chaining of the current instance
+         */
+        public <E> JsonBody<T> patch(String name, Class<E> deepClass, Function<T, Collection<E>> mapper, BiPredicate<E, JsonNode> keyEqual, Consumer<EntityPatch.JsonBody<E>> consumer) {
+            Collection<E> deepEntities = mapper.apply(entity);
+            Set<JsonNode> deepBodies = new HashSet<>();
+            json.path(name).forEach(deepBodies::add);
+
+            deepEntities.removeIf(deepEntity -> {
+                // Check whether existing json exist
+                Optional<JsonNode> deepJson = deepBodies.stream()
+                        .filter(jsonNode -> keyEqual.test(deepEntity, jsonNode))
+                        .findFirst();
+
+                // If deepJson exist, patch and remove from existing list
+                if (deepJson.isPresent()) {
+                    consumer.accept(new EntityPatch.JsonBody<>(entityManager, deepEntity, deepJson.get()));
+                    deepBodies.remove(deepJson.get());
+                    return false;
+                }
+
+                // If deepJson don't exist, it needs to be removed so that orphanRemoval can delete the entity
+                return true;
+            });
+
+            // Add remaining bodies into deep entities
+            deepBodies.forEach(jsonNode -> {
+                deepEntities.add(JsonUtils.toObject(jsonNode, deepClass));
+            });
+
             return this;
         }
     }
