@@ -6,7 +6,11 @@ import dev.fuxing.utils.JsonUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -100,7 +104,7 @@ public final class EntityPatch {
          * @param <E>        entity type
          * @return chaining of the current instance
          */
-        public <E> JsonBody<T> patch(String name, Function<T, Collection<E>> toEntities, BiPredicate<E, JsonNode> keyEqual, Consumer<EntityPatch.JsonBody<E>> patcher, Function<JsonNode, E> toEntity) {
+        public <E> JsonBody<T> patch(String name, Function<T, Collection<E>> toEntities, BiPredicate<E, JsonNode> keyEqual, Consumer<EntityPatch.JsonBody<E>> patcher, BiFunction<T, JsonNode, E> toEntity) {
             Collection<E> deepEntities = toEntities.apply(entity);
             Set<JsonNode> deepBodies = new HashSet<>();
             json.path(name).forEach(deepBodies::add);
@@ -124,7 +128,7 @@ public final class EntityPatch {
 
             // Add remaining bodies into deep entities
             deepBodies.forEach(jsonNode -> {
-                deepEntities.add(toEntity.apply(jsonNode));
+                deepEntities.add(toEntity.apply(entity, jsonNode));
             });
 
             return this;
