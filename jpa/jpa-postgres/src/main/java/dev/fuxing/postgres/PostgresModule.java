@@ -51,9 +51,13 @@ public final class PostgresModule extends AbstractModule {
      */
     @Inject
     void setupDatabase() {
+        String[] urlUsernamePassword = getUrlUsernamePassword();
+        String url = urlUsernamePassword[0];
+        String username = urlUsernamePassword[1];
+        String password = urlUsernamePassword[2];
+
         try {
             // Wait for url to be ready
-            String url = config.getString("url");
 
             if (config.hasPath("waitFor") && config.getBoolean("waitFor")) {
                 // If this fails, most likely the endpoint cannot be accessed.
@@ -67,8 +71,8 @@ public final class PostgresModule extends AbstractModule {
             properties.put("hibernate.hikari.dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource");
 
             properties.put("hibernate.hikari.dataSource.url", url);
-            properties.put("hibernate.hikari.dataSource.user", config.getString("username"));
-            properties.put("hibernate.hikari.dataSource.password", config.getString("password"));
+            properties.put("hibernate.hikari.dataSource.user", username);
+            properties.put("hibernate.hikari.dataSource.password", password);
 
             // Disable by default due to this error: found [bpchar (Types#CHAR)], but expecting [char(36) (Types#VARCHAR)]
             String autoCreate = config.getBoolean("autoCreate") ? "update" : "none";
@@ -80,6 +84,19 @@ public final class PostgresModule extends AbstractModule {
             logger.error("PostgresModule fail to setup", e);
             throw e;
         }
+    }
+
+    private String[] getUrlUsernamePassword() {
+        if (config.hasPath("csv")) {
+            String[] csv = config.getString("csv").split(",");
+            assert csv.length == 3;
+            return csv;
+        }
+
+        String url = config.getString("url");
+        String username = config.getString("username");
+        String password = config.getString("password");
+        return new String[]{url, username, password};
     }
 
     private void setupFactory(Map<String, String> properties) {
