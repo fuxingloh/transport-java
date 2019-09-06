@@ -244,15 +244,16 @@ public final class KeyUtils {
 
     /**
      * @param text to generate
+     * @param max  length of slug
      * @return url safe slug
      */
-    public static String generateSlug(String text) {
+    public static String generateSlug(String text, int max) {
         if (StringUtils.isBlank(text)) return null;
 
         text = text.toLowerCase();
         text = text.replace(" ", "-");
         text = text.replaceAll("[^a-z0-9-]", "");
-        return StringUtils.substring(text, 0, 255);
+        return StringUtils.substring(text, 0, max);
     }
 
     /**
