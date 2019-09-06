@@ -47,6 +47,11 @@ public final class EntityPatch {
             return this;
         }
 
+        public JsonBody<T> peek(Consumer<T> consumer) {
+            consumer.accept(entity);
+            return this;
+        }
+
         public <E> JsonBody<T> patch(String name, Class<E> enumClass, EnumConsumer<T, E> consumer) {
             return patch(name, (NodeConsumer<T>) (content, node) -> {
                 E type = JsonUtils.toObject(node, enumClass);
