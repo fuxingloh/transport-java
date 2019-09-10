@@ -8,6 +8,5 @@ package dev.fuxing.elastic.dsl;
 public final class ElasticDSL implements
         MatchDSL, TermDSL, FunctionScoreDSL,
         SortDSL,
-        SuggestDSL,
         SpatialDSL {
 }

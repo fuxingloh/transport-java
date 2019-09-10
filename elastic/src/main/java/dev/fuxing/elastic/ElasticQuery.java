@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.fuxing.elastic.dsl.ElasticDSL;
+import dev.fuxing.elastic.dsl.SpatialDSL;
 import dev.fuxing.utils.JsonUtils;
 
 import java.util.Collection;
@@ -24,11 +25,15 @@ public class ElasticQuery {
     private final JsonNode query;
     private final JsonNode sort;
 
-    protected ElasticQuery(int from, int size, JsonNode query, JsonNode sort) {
+    private final JsonNode suggest;
+
+    protected ElasticQuery(int from, int size, JsonNode query, JsonNode sort, JsonNode suggest) {
         this.from = from;
         this.size = size;
         this.query = query;
         this.sort = sort;
+
+        this.suggest = suggest;
     }
 
     public int getFrom() {
@@ -47,6 +52,10 @@ public class ElasticQuery {
         return sort;
     }
 
+    public JsonNode getSuggest() {
+        return suggest;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -56,6 +65,7 @@ public class ElasticQuery {
         private int size = 20;
         private JsonNode query;
         private JsonNode sort;
+        private JsonNode suggest;
 
         public Builder from(int from) {
             this.from = from;
@@ -81,8 +91,15 @@ public class ElasticQuery {
             return this;
         }
 
+        public Builder suggest(Consumer<Suggest> consumer) {
+            Suggest suggest = new Suggest();
+            consumer.accept(suggest);
+            this.suggest = suggest.suggest;
+            return this;
+        }
+
         public ElasticQuery asPojo() {
-            return new ElasticQuery(from, size, query, sort);
+            return new ElasticQuery(from, size, query, sort, suggest);
         }
 
         public JsonNode asJsonNode() {
@@ -96,6 +113,10 @@ public class ElasticQuery {
 
             if (sort != null) {
                 root.set("sort", sort);
+            }
+
+            if (suggest != null) {
+                root.set("suggest", suggest);
             }
             return root;
         }
@@ -252,6 +273,79 @@ public class ElasticQuery {
         }
     }
 
+    public static class Suggest {
+        private ObjectNode suggest = createObjectNode();
+
+        public Suggest prefix(String name, String prefixText, Consumer<Completion> consumer) {
+            Completion completion = new Completion();
+            consumer.accept(completion);
+
+            suggest.putObject(name)
+                    .put("prefix", prefixText)
+                    .set("completion", completion.completion);
+            return this;
+        }
+
+        public static class Completion {
+            ObjectNode completion = createObjectNode();
+
+            public Completion field(String field) {
+                completion.put("field", field);
+                return this;
+            }
+
+            public Completion fuzzy(boolean fuzzy) {
+                completion.put("fuzzy", true);
+                return this;
+            }
+
+            public Completion size(int size) {
+                completion.put("size", size);
+                return this;
+            }
+
+            public Completion contexts(Consumer<Contexts> consumer) {
+                Contexts contexts = new Contexts();
+                consumer.accept(contexts);
+                completion.set("contexts", contexts.contexts);
+                return this;
+            }
+
+            public static class Contexts {
+                ObjectNode contexts = createObjectNode();
+
+                public Contexts category(String name, String... categories) {
+                    ArrayNode arrayNode = createArrayNode();
+                    for (String cat : categories) {
+                        arrayNode.add(cat);
+                    }
+
+                    contexts.set(name, arrayNode);
+                    return this;
+                }
+
+                public Contexts geo(String name, String latLng, int precision, double boost) {
+                    double[] ll = SpatialDSL.parse(latLng);
+
+                    ArrayNode latLngArray = createArrayNode();
+                    latLngArray.addObject()
+                            .put("precision", precision)
+                            .put("boost", boost)
+                            .putObject("context")
+                            .put("lat", ll[0])
+                            .put("lon", ll[1]);
+                    contexts.set(name, latLngArray);
+                    return this;
+                }
+
+                public Contexts raw(String name, JsonNode context) {
+                    contexts.set(name, context);
+                    return this;
+                }
+            }
+        }
+    }
+
     public interface Match<T extends Match<T>> {
         default T matchAll() {
             return add(DSL.mustMatchAll());
@@ -274,7 +368,7 @@ public class ElasticQuery {
 
     @SuppressWarnings("unchecked")
     public static abstract class Array<T extends Array<T>> {
-        protected ArrayNode array = JsonUtils.createArrayNode();
+        protected ArrayNode array = createArrayNode();
 
         public T add(JsonNode node) {
             array.add(node);
@@ -284,5 +378,9 @@ public class ElasticQuery {
 
     private static ObjectNode createObjectNode() {
         return JsonUtils.createObjectNode();
+    }
+
+    private static ArrayNode createArrayNode() {
+        return JsonUtils.createArrayNode();
     }
 }
