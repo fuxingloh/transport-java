@@ -91,10 +91,20 @@ public final class KeyUtils {
     private KeyUtils() {/**/}
 
     /**
+     * 256 ^ 7 = 7.2057594e+16
      * @return length 12 base 32 crockford
      */
     public static String nextL12() {
         byte[] bytes = RandomUtils.nextBytes(7);
+        return CROCKFORD_BASE_32.encodeToString(bytes).toLowerCase();
+    }
+
+    /**
+     * 256 ^ 10 = 1.2089258e+24
+     * @return length 16, base 32 crockford
+     */
+    public static String nextL16() {
+        byte[] bytes = RandomUtils.nextBytes(10);
         return CROCKFORD_BASE_32.encodeToString(bytes).toLowerCase();
     }
 
