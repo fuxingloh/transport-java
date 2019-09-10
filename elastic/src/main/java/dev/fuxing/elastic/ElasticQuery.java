@@ -9,6 +9,7 @@ import dev.fuxing.utils.JsonUtils;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -20,28 +21,34 @@ import java.util.function.Consumer;
 public class ElasticQuery {
     private static final ElasticDSL DSL = new ElasticDSL();
 
-    private final int from;
-    private final int size;
+    private final Integer from;
+    private final Integer size;
+    private final Set<String> sources;
+
     private final JsonNode query;
     private final JsonNode sort;
-
     private final JsonNode suggest;
 
-    protected ElasticQuery(int from, int size, JsonNode query, JsonNode sort, JsonNode suggest) {
+    protected ElasticQuery(Integer from, Integer size, Set<String> sources, JsonNode query, JsonNode sort, JsonNode suggest) {
         this.from = from;
         this.size = size;
+        this.sources = sources;
         this.query = query;
         this.sort = sort;
 
         this.suggest = suggest;
     }
 
-    public int getFrom() {
+    public Integer getFrom() {
         return from;
     }
 
-    public int getSize() {
+    public Integer getSize() {
         return size;
+    }
+
+    public Set<String> getSources() {
+        return sources;
     }
 
     public JsonNode getQuery() {
@@ -61,8 +68,10 @@ public class ElasticQuery {
     }
 
     public static class Builder {
-        private int from = 0;
-        private int size = 20;
+        private Integer from = null;
+        private Integer size = null;
+        private Set<String> sources;
+
         private JsonNode query;
         private JsonNode sort;
         private JsonNode suggest;
@@ -74,6 +83,11 @@ public class ElasticQuery {
 
         public Builder size(int size) {
             this.size = size;
+            return this;
+        }
+
+        public Builder sources(String... sources) {
+            this.sources = Set.of(sources);
             return this;
         }
 
@@ -99,13 +113,22 @@ public class ElasticQuery {
         }
 
         public ElasticQuery asPojo() {
-            return new ElasticQuery(from, size, query, sort, suggest);
+            return new ElasticQuery(from, size, sources, query, sort, suggest);
         }
 
         public JsonNode asJsonNode() {
             ObjectNode root = createObjectNode();
-            root.put("from", from);
-            root.put("size", size);
+            if (from != null) {
+                root.put("from", from);
+            }
+
+            if (size != null) {
+                root.put("size", size);
+            }
+
+            if (sources != null) {
+                root.set("_sources", JsonUtils.valueToTree(sources));
+            }
 
             if (query != null) {
                 root.set("query", query);
