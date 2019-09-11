@@ -17,7 +17,10 @@ import java.util.function.Consumer;
  * Date: 2019-04-15
  * Time: 20:51
  * Project: v22-transport
+ *
+ * @deprecated use Elasticsearch official high level rest API instead, available since v6.0.0.beta
  */
+@Deprecated
 public class ElasticQuery {
     private static final ElasticDSL DSL = new ElasticDSL();
 
