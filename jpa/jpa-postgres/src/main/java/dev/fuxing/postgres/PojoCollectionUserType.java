@@ -5,9 +5,12 @@ import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
 
 /**
@@ -39,9 +42,25 @@ public class PojoCollectionUserType<F extends Collection, B> extends PojoUserTyp
     }
 
     @Override
+    public void nullSafeSet(PreparedStatement ps, Object value, int index, SharedSessionContractImplementor session) throws HibernateException, SQLException {
+        if (value == null) {
+            ps.setNull(index, Types.OTHER);
+            return;
+        }
+        try {
+            final StringWriter w = new StringWriter();
+            Mapper.writerFor(type).writeValue(w, value);
+            w.flush();
+            ps.setObject(index, w.toString(), Types.OTHER);
+        } catch (Exception ex) {
+            throw new HibernateException(ex);
+        }
+    }
+
+    @Override
     public F deepCopy(Object value) throws HibernateException {
         try {
-            byte[] bytes = Mapper.writeValueAsBytes(value);
+            byte[] bytes = Mapper.writerFor(type).writeValueAsBytes(value);
             return Mapper.readValue(bytes, type);
         } catch (IOException ex) {
             throw new HibernateException(ex);

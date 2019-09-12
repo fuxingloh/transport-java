@@ -145,6 +145,9 @@ public final class JsonUtils {
     }
 
     /**
+     * Generic types type information is ignored when parsed as Java don't store them.
+     * https://github.com/FasterXML/jackson-databind/issues/1816
+     *
      * @param object JsonNode or POJO
      * @return JSON String
      */
