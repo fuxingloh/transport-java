@@ -170,6 +170,13 @@ public class TransportCursor {
     }
 
     /**
+     * @return TransportCursor builder
+     */
+    public Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Builder for TransportCursor.
      */
     public static class Builder {
@@ -178,14 +185,20 @@ public class TransportCursor {
         /**
          * @param key   name
          * @param value value, all converted to string
+         * @return Builder chaining
          */
-        public void put(String key, Object value) {
+        public Builder put(String key, Object value) {
             Objects.requireNonNull(value, "Value required.");
             this.parameters.put(key, value.toString());
+            return this;
         }
 
         public TransportCursor build() {
             return new TransportCursor(this);
+        }
+
+        public String toBase64() {
+            return build().toBase64();
         }
     }
 

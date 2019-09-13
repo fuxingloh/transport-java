@@ -62,6 +62,13 @@ public final class EntityStream<T> {
         return new TransportList<>(nodes, cursor);
     }
 
+    /**
+     * @param consumer to accept entity list and its next cursor
+     */
+    public void consume(BiConsumer<List<T>, Map<String, String>> consumer) {
+        consumer.accept(list, cursor);
+    }
+
     public static <T> EntityStream<T> of(Supplier<List<T>> supplier) {
         return new EntityStream<>(supplier.get(), null);
     }
