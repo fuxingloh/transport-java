@@ -139,7 +139,11 @@ public class TransportServer implements TransportPath {
         Spark.exception(ValidationException.class, (exception, request, response) -> {
             List<String> sources = exception.getSources();
             logger.debug("Validation exception thrown from sources: {}", sources, exception);
-            logger.debug("Validated object:\n{}", JsonUtils.toString(exception.getObject()));
+            try {
+                logger.debug("Validated object:\n{}", JsonUtils.toString(exception.getObject()));
+            } catch (JsonException e) {
+                logger.debug("Attempt to parse validated object into JSON failed.");
+            }
             handleException(new TransportContext(request, response), exception);
         });
 
