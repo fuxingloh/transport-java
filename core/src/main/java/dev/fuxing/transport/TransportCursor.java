@@ -41,6 +41,19 @@ public class TransportCursor {
     }
 
     /**
+     * @param keys of value, to check
+     * @return whether all the keys exist
+     */
+    public boolean has(String... keys) {
+        if (keys.length == 0) return false;
+
+        for (String key : keys) {
+            if (!parameter.containsKey(key)) return false;
+        }
+        return true;
+    }
+
+    /**
      * @param key of value
      * @return string or {@code null} if not found
      */
