@@ -3,6 +3,7 @@ package dev.fuxing.jpa;
 
 
 import dev.fuxing.err.ExceptionParser;
+import dev.fuxing.err.NotFoundException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -131,42 +132,68 @@ public class TransactionProvider {
      * @return object
      */
     public <T> T reduce(boolean readOnly, Function<EntityManager, T> function) {
+        if (readOnly) {
+            return reduceReadOnly(function);
+        } else {
+            return reduceTransactional(function);
+        }
+    }
+
+    private <T> T reduceReadOnly(Function<EntityManager, T> function) {
+        EntityManager entityManager = null;
+
+        try {
+            entityManager = factory.createEntityManager();
+            entityManager.setProperty(HINT_READ_ONLY, true);
+
+            T result = function.apply(entityManager);
+
+            return clean(result);
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            ExceptionParser.parse(e);
+            throw new DatabaseException(e);
+        } finally {
+            if (entityManager != null) {
+                entityManager.close();
+            }
+        }
+    }
+
+    private <T> T reduceTransactional(Function<EntityManager, T> function) {
         EntityManager entityManager = null;
         EntityTransaction transaction = null;
 
         try {
             entityManager = factory.createEntityManager();
-            entityManager.setProperty(HINT_READ_ONLY, readOnly);
+            entityManager.setProperty(HINT_READ_ONLY, false);
 
-            if (!readOnly) {
-                transaction = entityManager.getTransaction();
-                transaction.begin();
-            }
+            transaction = entityManager.getTransaction();
+            transaction.begin();
 
             T result = function.apply(entityManager);
 
-            if (transaction != null) {
-                if (transaction.getRollbackOnly()) {
-                    transaction.rollback();
-                } else {
-                    transaction.commit();
-                }
+            if (transaction.getRollbackOnly()) {
+                transaction.rollback();
+            } else {
+                transaction.commit();
             }
 
             return clean(result);
-        } catch (NoResultException e) {
-            return null;
-        } catch (Throwable t) {
+        } catch (Exception e) {
             if (transaction != null) {
                 try {
                     transaction.rollback();
                 } catch (Throwable ignored) {/**/}
             }
 
-            if (t instanceof Exception) {
-                ExceptionParser.parse((Exception) t);
+            if (e instanceof NoResultException) {
+                throw new NotFoundException();
             }
-            throw new DatabaseException(t);
+
+            ExceptionParser.parse(e);
+            throw new DatabaseException(e);
         } finally {
             if (entityManager != null) {
                 entityManager.close();
