@@ -1,6 +1,7 @@
 package dev.fuxing.transport;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import dev.fuxing.err.ConflictException;
 import dev.fuxing.err.ParamException;
 import dev.fuxing.utils.JsonUtils;
 import org.apache.commons.lang3.EnumUtils;
@@ -8,10 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Cursor contains the all the information for the next list of objects.
@@ -38,6 +38,20 @@ public class TransportCursor {
 
     private TransportCursor(Builder builder) {
         this(builder.parameters);
+    }
+
+    /**
+     * @param defaultSize default size if not present
+     * @param maxSize     max size if present
+     * @return size value from query string
+     */
+    public int size(int defaultSize, int maxSize) {
+        Integer size = getInt("size", defaultSize);
+        assert size != null : "size will always be present";
+
+        if (size <= 0) return defaultSize;
+        if (size >= maxSize) return maxSize;
+        return size;
     }
 
     /**
@@ -74,6 +88,31 @@ public class TransportCursor {
         E num = EnumUtils.getEnum(clazz, get(key));
         if (num != null) return num;
         return defaultValue;
+    }
+
+    public <E extends Enum<E>> E getEnum(String key, Class<E> clazz) {
+        E num = EnumUtils.getEnum(clazz, get(key));
+        if (num != null) return num;
+        throw new ConflictException("enum not parsable.");
+    }
+
+    public <E extends Enum<E>> Set<E> getEnums(String key, Class<E> clazz) {
+        String value = get(key);
+        if (StringUtils.isBlank(value)) {
+            return Set.of();
+        }
+        return Arrays.stream(value.split(", *"))
+                .map(s -> JsonUtils.toEnum(s, clazz))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+    }
+
+    @Nullable
+    public Date getDate(String key) {
+        Long millis = getLong(key, null);
+        if (millis == null) return null;
+
+        return new Timestamp(millis);
     }
 
     /**
@@ -182,6 +221,11 @@ public class TransportCursor {
         return new TransportCursor(parameters);
     }
 
+    @NotNull
+    public static TransportCursor fromMap(Map<String, String> map) {
+        return new TransportCursor(map);
+    }
+
     /**
      * @return TransportCursor builder
      */
@@ -203,6 +247,15 @@ public class TransportCursor {
         public Builder put(String key, Object value) {
             Objects.requireNonNull(value, "Value required.");
             this.parameters.put(key, value.toString());
+            return this;
+        }
+
+        /**
+         * @param cursor to read and put all from
+         * @return Builder chaining
+         */
+        public Builder put(TransportCursor cursor) {
+            cursor.parameter.forEach(this::put);
             return this;
         }
 

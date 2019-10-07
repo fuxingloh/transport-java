@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by: Fuxing
@@ -14,16 +16,6 @@ import javax.validation.constraints.NotNull;
  * Time: 06:07
  */
 public interface ContextCursor extends Context {
-
-    /**
-     * @param key          to get in cursor
-     * @param defaultValue default value
-     * @return a single key in cursor or defaultValue if not found
-     */
-    @Nullable
-    default String queryCursorString(String key, @Nullable String defaultValue) {
-        return queryCursor().get(key, defaultValue);
-    }
 
     /**
      * cursor itself will not determine the direction, it is stateless
@@ -37,12 +29,26 @@ public interface ContextCursor extends Context {
     }
 
     /**
-     * @param name cursor name, e.g. next, prev
-     * @return Cursor, or a empty cursor will be returned
+     * @param name of the cursor
+     * @return Cursor, if not found will read from QueryString, else a empty one will be returned.
      */
     @NotNull
     default TransportCursor queryCursor(String name) {
-        return queryCursor(name, TransportCursor.EMPTY);
+        TransportCursor cursor = queryCursor(name, null);
+        if (cursor != null) return cursor;
+
+        if (request().queryParams().isEmpty()) {
+            return TransportCursor.EMPTY;
+        }
+
+        Map<String, String> map = new HashMap<>();
+        request().queryParams().forEach(s -> {
+            String value = request().queryParams(s);
+            if (StringUtils.isBlank(value)) return;
+            map.put(s, value);
+        });
+
+        return TransportCursor.fromMap(map);
     }
 
     /**
@@ -59,6 +65,17 @@ public interface ContextCursor extends Context {
     }
 
     /**
+     * @param key          to get in cursor
+     * @param defaultValue default value
+     * @return a single key in cursor or defaultValue if not found
+     */
+    @Nullable
+    @Deprecated
+    default String queryCursorString(String key, @Nullable String defaultValue) {
+        return queryCursor().get(key, defaultValue);
+    }
+
+    /**
      * Cursor &#x3E; Query &#x3E; Default
      *
      * @param name         of enum
@@ -69,6 +86,7 @@ public interface ContextCursor extends Context {
      * @return enum
      */
     @Nullable
+    @Deprecated
     default <E extends Enum<E>> E queryEnum(String name, Class<E> clazz, TransportCursor cursor, @Nullable E defaultValue) {
         E num = cursor.getEnum(name, clazz, null);
         if (num != null) return num;
@@ -86,6 +104,7 @@ public interface ContextCursor extends Context {
      * @param defaultValue default String value
      * @return String value
      */
+    @Deprecated
     default String queryString(String name, TransportCursor cursor, String defaultValue) throws ParamException {
         String value = cursor.get(name, null);
         if (value != null) return value;
@@ -106,6 +125,7 @@ public interface ContextCursor extends Context {
      * @return int value from query string
      * @throws ParamException query param not found
      */
+    @Deprecated
     default Integer queryInt(String name, TransportCursor cursor, @Nullable Integer defaultValue) throws ParamException {
         Integer integer = cursor.getInt(name, null);
         if (integer != null) return integer;
@@ -128,6 +148,7 @@ public interface ContextCursor extends Context {
      * @return long value from query string
      * @throws ParamException query param not found
      */
+    @Deprecated
     default Long queryLong(String name, TransportCursor cursor, @Nullable Long defaultValue) throws ParamException {
         Long aLong = cursor.getLong(name, null);
         if (aLong != null) return aLong;
@@ -150,6 +171,7 @@ public interface ContextCursor extends Context {
      * @return double value from query string
      * @throws ParamException query param not found
      */
+    @Deprecated
     default Double queryDouble(String name, TransportCursor cursor, @Nullable Double defaultValue) throws ParamException {
         Double aDouble = cursor.getDouble(name, null);
         if (aDouble != null) return aDouble;

@@ -40,9 +40,12 @@ public final class HealthCheckServer {
         }
     }
 
+    /**
+     * @param exchange to send "{}", as Transport protocol return this
+     */
     private static void handleExchange(HttpExchange exchange) {
         try {
-            String response = "ok";
+            String response = "{}";
             exchange.sendResponseHeaders(200, response.length());
             OutputStream os = exchange.getResponseBody();
             os.write(response.getBytes());
@@ -104,7 +107,7 @@ public final class HealthCheckServer {
         logger.info("Started HealthCheckServer on port: {}", port);
 
         try {
-            logger.info("Starting blocking Runnable.");
+            logger.info("Starting blocking task.");
             runnable.run();
         } finally {
             logger.warn("Task exited.");
