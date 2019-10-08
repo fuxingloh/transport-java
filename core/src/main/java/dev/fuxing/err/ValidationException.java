@@ -2,6 +2,8 @@ package dev.fuxing.err;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Path;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
  * Time: 7:49 PM
  */
 public class ValidationException extends TransportException {
+    private static final Logger logger = LoggerFactory.getLogger(ValidationException.class);
     public static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     private List<String> reasons;
@@ -89,6 +92,8 @@ public class ValidationException extends TransportException {
                     return path.toString() + ": " + message;
                 })
                 .collect(Collectors.toList());
+
+        logger.debug("ValidationException: {} with groups: {}\n{}", object.getClass(), groups, reasons);
         throw new ValidationException(reasons, object);
     }
 
