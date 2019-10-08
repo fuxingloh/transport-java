@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
  * Date: 2019-08-12
  * Time: 16:11
  */
-public final class EntityStream<T> {
+public class EntityStream<T> {
     private List<T> list;
     private Map<String, String> cursor;
 
-    private EntityStream(List<T> list, Map<String, String> cursor) {
+    protected EntityStream(List<T> list, Map<String, String> cursor) {
         this.list = list;
         this.cursor = cursor;
     }
