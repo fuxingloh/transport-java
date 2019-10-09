@@ -7,6 +7,8 @@ import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 /**
  * Created by: Fuxing
@@ -82,8 +84,15 @@ public interface ContextQuery extends Context {
     default int querySize(int defaultSize, int maxSize) {
         int size = queryInt("size", defaultSize);
         if (size <= 0) return defaultSize;
-        if (size >= maxSize) return maxSize;
-        return size;
+        return Math.min(size, maxSize);
+    }
+
+    /**
+     * @return fields in Set String, NonNull
+     */
+    @NotNull
+    default Set<String> queryFields() {
+        return Set.of(queryString("fields", "").split(", *"));
     }
 
     /**
