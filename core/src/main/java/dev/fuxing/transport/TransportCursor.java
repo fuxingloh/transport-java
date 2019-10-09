@@ -1,6 +1,5 @@
 package dev.fuxing.transport;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import dev.fuxing.err.ConflictException;
 import dev.fuxing.err.ParamException;
 import dev.fuxing.utils.JsonUtils;
@@ -212,24 +211,14 @@ public class TransportCursor {
     }
 
     @Nullable
-    public static TransportCursor fromBase64(String value) {
-        if (StringUtils.isBlank(value)) return null;
-
-        byte[] decode = DECODER.decode(value);
-        JsonNode node = JsonUtils.bytesToTree(decode);
-        Map<String, String> parameters = JsonUtils.toMap(node, String.class, String.class);
-        return new TransportCursor(parameters);
-    }
-
-    @NotNull
-    public static TransportCursor fromMap(Map<String, String> map) {
-        return new TransportCursor(map);
+    public static TransportCursor fromBase64(String base64) {
+        return builder().base64(base64).build();
     }
 
     /**
      * @return TransportCursor builder
      */
-    public Builder builder() {
+    public static Builder builder() {
         return new Builder();
     }
 
@@ -254,8 +243,27 @@ public class TransportCursor {
          * @param cursor to read and put all from
          * @return Builder chaining
          */
-        public Builder put(TransportCursor cursor) {
-            cursor.parameter.forEach(this::put);
+        public Builder putAll(TransportCursor cursor) {
+            this.parameters.putAll(cursor.parameter);
+            return this;
+        }
+
+        /**
+         * @param parameters to put
+         * @return Builder chaining
+         */
+        public Builder putAll(Map<String, String> parameters) {
+            this.parameters.putAll(parameters);
+            return this;
+        }
+
+        /**
+         * @param base64 to convert from base 64 to parameters
+         * @return Builder chaining
+         */
+        public Builder base64(String base64) {
+            byte[] decoded = DECODER.decode(base64);
+            parameters.putAll(JsonUtils.toMap(decoded, String.class, String.class));
             return this;
         }
 

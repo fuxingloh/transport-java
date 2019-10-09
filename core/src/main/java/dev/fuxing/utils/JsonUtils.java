@@ -314,6 +314,15 @@ public final class JsonUtils {
         }
     }
 
+    public static <K, V> Map<K, V> toMap(byte[] bytes, Class<K> keyClass, Class<V> valueClass) {
+        try {
+            MapType type = objectMapper.getTypeFactory().constructMapType(HashMap.class, keyClass, valueClass);
+            return objectMapper.readValue(bytes, type);
+        } catch (IOException e) {
+            throw new JsonException(e);
+        }
+    }
+
     public static <K, V> Map<K, V> toMap(String json, Class<K> keyClass, Class<V> valueClass) {
         try {
             MapType type = objectMapper.getTypeFactory().constructMapType(HashMap.class, keyClass, valueClass);

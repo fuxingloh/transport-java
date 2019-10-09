@@ -1,8 +1,6 @@
 package dev.fuxing.transport.service.context;
 
-import dev.fuxing.err.ParamException;
 import dev.fuxing.transport.TransportCursor;
-import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
@@ -30,25 +28,36 @@ public interface ContextCursor extends Context {
 
     /**
      * @param name of the cursor
-     * @return Cursor, if not found will read from QueryString, else a empty one will be returned.
+     * @return Cursor, if not found will attempt to read from TransportContext
      */
     @NotNull
     default TransportCursor queryCursor(String name) {
-        TransportCursor cursor = queryCursor(name, null);
-        if (cursor != null) return cursor;
+        TransportCursor.Builder builder = TransportCursor.builder();
 
-        if (request().queryParams().isEmpty()) {
-            return TransportCursor.EMPTY;
+        String cursor = request().queryParams(name);
+        if (StringUtils.isNotBlank(cursor)) {
+            builder.base64(cursor);
         }
 
-        Map<String, String> map = new HashMap<>();
-        request().queryParams().forEach(s -> {
-            String value = request().queryParams(s);
-            if (StringUtils.isBlank(value)) return;
-            map.put(s, value);
-        });
+        builder.putAll(queryParamsMap(name));
+        return builder.build();
+    }
 
-        return TransportCursor.fromMap(map);
+    /**
+     * @param ignores key to ignore
+     * @return Map parameters with ignores trimmed out
+     */
+    @NotNull
+    private Map<String, String> queryParamsMap(String... ignores) {
+        Map<String, String> map = new HashMap<>();
+
+        request().queryParams().forEach(s -> {
+            for (String ignore : ignores) {
+                if (s.equals(ignore)) return;
+            }
+            map.put(s, request().queryParams(s));
+        });
+        return map;
     }
 
     /**
@@ -59,129 +68,9 @@ public interface ContextCursor extends Context {
     @Nullable
     default TransportCursor queryCursor(String name, @Nullable TransportCursor defaultCursor) {
         String cursor = request().queryParams(name);
-        if (StringUtils.isBlank(cursor)) return defaultCursor;
-
-        return TransportCursor.fromBase64(cursor);
-    }
-
-    /**
-     * @param key          to get in cursor
-     * @param defaultValue default value
-     * @return a single key in cursor or defaultValue if not found
-     */
-    @Nullable
-    @Deprecated
-    default String queryCursorString(String key, @Nullable String defaultValue) {
-        return queryCursor().get(key, defaultValue);
-    }
-
-    /**
-     * Cursor &#x3E; Query &#x3E; Default
-     *
-     * @param name         of enum
-     * @param clazz        to bound Object to
-     * @param cursor       to read from first
-     * @param defaultValue default enum value
-     * @param <E>          Enum class
-     * @return enum
-     */
-    @Nullable
-    @Deprecated
-    default <E extends Enum<E>> E queryEnum(String name, Class<E> clazz, TransportCursor cursor, @Nullable E defaultValue) {
-        E num = cursor.getEnum(name, clazz, null);
-        if (num != null) return num;
-
-        num = EnumUtils.getEnum(clazz, request().queryParams(name));
-        if (num != null) return num;
-        return defaultValue;
-    }
-
-    /**
-     * Cursor &#x3E; Query &#x3E; Default
-     *
-     * @param name         name of query string
-     * @param cursor       to read from first
-     * @param defaultValue default String value
-     * @return String value
-     */
-    @Deprecated
-    default String queryString(String name, TransportCursor cursor, String defaultValue) throws ParamException {
-        String value = cursor.get(name, null);
-        if (value != null) return value;
-
-        value = request().queryParams(name);
-        if (StringUtils.isNotBlank(value)) {
-            return value;
+        if (StringUtils.isNotBlank(cursor)) {
+            return TransportCursor.fromBase64(cursor);
         }
-        return defaultValue;
-    }
-
-    /**
-     * Cursor &#x3E; Query &#x3E; Default
-     *
-     * @param name         name of query string
-     * @param cursor       to read from first
-     * @param defaultValue default int value if not found
-     * @return int value from query string
-     * @throws ParamException query param not found
-     */
-    @Deprecated
-    default Integer queryInt(String name, TransportCursor cursor, @Nullable Integer defaultValue) throws ParamException {
-        Integer integer = cursor.getInt(name, null);
-        if (integer != null) return integer;
-
-        try {
-            String value = request().queryParams(name);
-            if (StringUtils.isBlank(value)) return defaultValue;
-            return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            throw new ParamException(name);
-        }
-    }
-
-    /**
-     * Cursor &#x3E; Query &#x3E; Default
-     *
-     * @param name         name of query string
-     * @param cursor       to read from first
-     * @param defaultValue default long value if not found
-     * @return long value from query string
-     * @throws ParamException query param not found
-     */
-    @Deprecated
-    default Long queryLong(String name, TransportCursor cursor, @Nullable Long defaultValue) throws ParamException {
-        Long aLong = cursor.getLong(name, null);
-        if (aLong != null) return aLong;
-
-        try {
-            String value = request().queryParams(name);
-            if (StringUtils.isBlank(value)) return defaultValue;
-            return Long.parseLong(value);
-        } catch (NumberFormatException e) {
-            throw new ParamException(name);
-        }
-    }
-
-    /**
-     * Cursor &#x3E; Query &#x3E; Default
-     *
-     * @param name         name of query string
-     * @param cursor       to read from first
-     * @param defaultValue default double value if not found
-     * @return double value from query string
-     * @throws ParamException query param not found
-     */
-    @Deprecated
-    default Double queryDouble(String name, TransportCursor cursor, @Nullable Double defaultValue) throws ParamException {
-        Double aDouble = cursor.getDouble(name, null);
-        if (aDouble != null) return aDouble;
-
-        try {
-            String value = request().queryParams(name);
-            if (StringUtils.isBlank(value)) return defaultValue;
-            return Double.parseDouble(value);
-        } catch (NumberFormatException e) {
-            throw new ParamException(name);
-        }
+        return defaultCursor;
     }
 }
