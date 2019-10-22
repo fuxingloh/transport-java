@@ -30,7 +30,7 @@ public interface TransportRoute extends Route {
      * @param response spark response
      * @return TransportResult
      * @throws dev.fuxing.err.TransportException auto convert into {error: {}}
-     * @throws Exception                               auto convert into {error: {type: "UnknownException", ...}}
+     * @throws Exception                         auto convert into {error: {type: "UnknownException", ...}}
      * @see Object auto convert into {data: ...}
      * @see TransportResult auto convert into {...}
      * @see TransportList auto convert into {data: [], cursor: {}}
@@ -48,37 +48,44 @@ public interface TransportRoute extends Route {
      * @param handler  {@code Object handle(TransportContext context)}
      * @return TransportResult
      * @throws dev.fuxing.err.TransportException auto convert into {error: {}}
-     * @throws Exception                               auto convert into {error: {type: "UnknownException", ...}}
+     * @throws Exception                         auto convert into {error: {type: "UnknownException", ...}}
      * @see Object auto convert into {data: ...}
      * @see TransportResult auto convert into {...}
      * @see TransportList auto convert into {data: [], cursor: {}}
      */
     static TransportResult handle(Request request, Response response, Handler handler) throws Exception {
-        Object result = handler.handle(new TransportContext(request, response));
+        Object object = handler.handle(new TransportContext(request, response));
+        TransportResult result = asTransportResult(object);
+
+        response.status(result.getCode());
         response.type(APP_JSON);
-        response.status(200);
+        return result;
+    }
 
-        if (result instanceof TransportResult) {
-            response.status(((TransportResult) result).getCode());
-            return (TransportResult) result;
+    static TransportResult asTransportResult(Object object) {
+        if (object instanceof TransportResult.Builder) {
+            return ((TransportResult.Builder) object).build();
         }
 
-        if (result instanceof TransportList) {
-            TransportResult transportResult = TransportResult.ok(result);
-            TransportList transportList = ((TransportList) result);
-
-            if (transportList.hasCursorMap()) {
-                transportResult.put("cursor", transportList.getCursorMap());
-            }
-            return transportResult;
+        if (object instanceof TransportResult) {
+            return (TransportResult) object;
         }
 
-        if (result == null) {
-            response.status(404);
-            return TransportResult.notFound();
+        if (object instanceof TransportList) {
+            return TransportResult.builder()
+                    .data((TransportList) object)
+                    .build();
         }
 
-        return TransportResult.ok(result);
+        if (object == null) {
+            return TransportResult.builder()
+                    .notFound()
+                    .build();
+        }
+
+        return TransportResult.builder()
+                .data(object)
+                .build();
     }
 
     interface Handler {

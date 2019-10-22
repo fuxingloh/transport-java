@@ -23,19 +23,9 @@ public interface TransportService extends TransportPath, TransportMethod {
     void route();
 
     /**
-     * @param code status code
-     * @return TransportResult
+     * @return TransportResult.Builder
      */
-    default TransportResult result(int code) {
-        return TransportResult.of(code);
-    }
-
-    /**
-     * @param code   status code
-     * @param object data object
-     * @return TransportResult
-     */
-    default TransportResult result(int code, Object object) {
-        return TransportResult.of(code, object);
+    default TransportResult.Builder resultBuilder() {
+        return TransportResult.builder();
     }
 }
