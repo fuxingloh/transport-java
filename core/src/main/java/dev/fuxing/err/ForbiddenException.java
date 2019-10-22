@@ -19,7 +19,7 @@ public final class ForbiddenException extends TransportException {
      * Authorization will not help and the request SHOULD NOT be repeated.
      */
     public ForbiddenException() {
-        this("Forbidden");
+        this("Forbidden.");
     }
 
     /**

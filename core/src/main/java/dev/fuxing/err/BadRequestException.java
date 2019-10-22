@@ -19,7 +19,7 @@ public final class BadRequestException extends TransportException {
      * The client SHOULD NOT repeat the request without modifications.
      */
     public BadRequestException() {
-        this("Bad Request");
+        this("Bad request.");
     }
 
     /**

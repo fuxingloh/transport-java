@@ -21,6 +21,6 @@ public final class DatabaseException extends TransportException {
     }
 
     public DatabaseException(Throwable cause) {
-        super(500, DatabaseException.class, cause.getMessage(), cause);
+        super(500, DatabaseException.class, "Unknown database error.", cause);
     }
 }

@@ -19,7 +19,7 @@ public final class BadGatewayException extends TransportException {
      * The server, while acting as a gateway or proxy, received an invalid response from the upstream server it accessed in attempting to fulfill the request.
      */
     public BadGatewayException() {
-        super(502, BadGatewayException.class, "Bad Gateway");
+        super(502, BadGatewayException.class, "Bad gateway.");
     }
 
     /**
@@ -28,6 +28,6 @@ public final class BadGatewayException extends TransportException {
      * @param throwable cause of exception, (not recommended)
      */
     public BadGatewayException(Throwable throwable) {
-        super(502, BadGatewayException.class, "Bad Gateway", throwable);
+        super(502, BadGatewayException.class, "Bad gateway.", throwable);
     }
 }

@@ -20,7 +20,7 @@ public final class UnavailableException extends TransportException {
      * The implication is that this is a temporary condition which will be alleviated after some delay.
      */
     public UnavailableException() {
-        super(503, UnavailableException.class, "Service Temporarily Unavailable");
+        super(503, UnavailableException.class, "Service temporarily unavailable.");
     }
 
     /**
@@ -30,6 +30,6 @@ public final class UnavailableException extends TransportException {
      * @param throwable cause of exception, (not recommended)
      */
     public UnavailableException(Throwable throwable) {
-        super(503, UnavailableException.class, "Service Temporarily Unavailable", throwable);
+        super(503, UnavailableException.class, "Service temporarily unavailable.", throwable);
     }
 }
