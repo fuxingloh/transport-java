@@ -1,5 +1,7 @@
 package dev.fuxing.transport.service;
 
+import java.util.function.Consumer;
+
 /**
  * Created By: Fuxing Loh
  * Date: 8/2/2017
@@ -23,9 +25,12 @@ public interface TransportService extends TransportPath, TransportMethod {
     void route();
 
     /**
-     * @return TransportResult.Builder
+     * @param consumer for building
+     * @return TransportResult created in the consumer
      */
-    default TransportResult.Builder resultBuilder() {
-        return TransportResult.builder();
+    default TransportResult result(Consumer<TransportResult.Builder> consumer) {
+        TransportResult.Builder builder = TransportResult.builder();
+        consumer.accept(builder);
+        return builder.build();
     }
 }
