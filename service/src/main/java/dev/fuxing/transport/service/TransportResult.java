@@ -1,11 +1,13 @@
 package dev.fuxing.transport.service;
 
 
+import dev.fuxing.transport.TransportCursor;
 import dev.fuxing.transport.TransportList;
 
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * TransportResult.
@@ -23,9 +25,16 @@ import java.util.Map;
  * <p>
  * - cursor: (Map only)
  * Used together with TransportList pagination.
+ * E.g.
+ * "next": "ey..."
+ * "next.articles": "ey..."
+ * "articles.next": "ey..."
  * <p>
  * - extra: (Map only)
  * Send extra data that is associated with payload.
+ * E.g.
+ * "profile": {},
+ * "profile.images": [{}, {}]
  *
  * @author Fuxing Loh
  * @since 2018-06-04 at 13:31
@@ -66,6 +75,11 @@ public class TransportResult {
      */
     public static class Builder {
         private int code = 200;
+
+        private Object data;
+        private Map<String, String> cursor = new HashMap<>();
+        private Map<String, Object> extra = new HashMap<>();
+
         private Map<String, Object> map = new HashMap<>();
 
         private Builder() {
@@ -80,39 +94,80 @@ public class TransportResult {
             return code(404);
         }
 
+        /**
+         * @param name of root level node
+         * @param data also known as the node
+         * @return current Builder instance
+         */
         public Builder with(String name, Object data) {
+            Objects.requireNonNull(name);
             map.put(name, data);
             return this;
         }
 
         public Builder data(Object data) {
-            return with("data", data);
+            this.data = data;
+            return this;
         }
 
         public Builder data(TransportList list) {
             return data((Object) list).cursor(list);
         }
 
-        public Builder cursor(Object cursor) {
-            return with("cursor", cursor);
+        public Builder cursor(Map<String, String> cursor) {
+            this.cursor.putAll(cursor);
+            return this;
         }
 
-        public Builder cursor(@NotNull TransportList list) {
+        public Builder cursor(@NotNull TransportList<?> list) {
             if (list.hasCursorMap()) {
-                cursor(list.getCursorMap());
+                return cursor(list.getCursorMap());
             }
             return this;
         }
 
-        public Builder extra(Object extra) {
-            return with("extra", extra);
+        public Builder cursor(String key, String base64) {
+            Objects.requireNonNull(key);
+            this.cursor.put(key, base64);
+            return this;
+        }
+
+        public Builder cursor(String key, TransportCursor cursor) {
+            Objects.requireNonNull(key);
+            this.cursor.put(key, cursor.toBase64());
+            return this;
+        }
+
+        public Builder extra(Map<String, Object> extra) {
+            this.extra.putAll(extra);
+            return this;
+        }
+
+        public Builder extra(String key, Object object) {
+            Objects.requireNonNull(key);
+            this.extra.put(key, object);
+            return this;
         }
 
         public TransportResult build() {
+            if (data != null) {
+                map.put("data", data);
+            }
+
+            if (!cursor.isEmpty()) {
+                map.put("cursor", cursor);
+            }
+
+            if (!extra.isEmpty()) {
+                map.put("extra", extra);
+            }
             return new TransportResult(code, map);
         }
     }
 
+    /**
+     * @return TransportResult.Builder for building TransportResult
+     */
     public static Builder builder() {
         return new Builder();
     }
