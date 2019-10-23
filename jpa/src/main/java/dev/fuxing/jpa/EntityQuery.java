@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * @author Fuxing Loh
@@ -174,6 +175,12 @@ public class EntityQuery<T> {
         @Override
         public EntityStream peek(Consumer<T> consumer) {
             super.peek(consumer);
+            return this;
+        }
+
+        @Override
+        public EntityStream removeIf(Predicate<T> predicate) {
+            super.removeIf(predicate);
             return this;
         }
     }
