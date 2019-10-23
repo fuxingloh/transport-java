@@ -223,6 +223,21 @@ public class TransportCursor {
     }
 
     /**
+     * @param size to put into cursor
+     * @return Cursor with fixed size
+     */
+    public static TransportCursor size(int size) {
+        return builder().put("size", size).build();
+    }
+
+    /**
+     * @return empty Cursor
+     */
+    public static TransportCursor empty() {
+        return EMPTY;
+    }
+
+    /**
      * Builder for TransportCursor.
      */
     public static class Builder {
