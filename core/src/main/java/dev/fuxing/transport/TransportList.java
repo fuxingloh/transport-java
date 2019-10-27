@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -211,5 +212,42 @@ public class TransportList<T> extends ArrayList<T> {
                 .collect(Collectors.toList());
 
         return new TransportList<>(collected, cursor);
+    }
+
+    /**
+     * @param <T> Item type
+     * @return TransportList Builder
+     */
+    public static <T> TransportList.Builder<T> builder() {
+        return new Builder<>();
+    }
+
+    public static final class Builder<T> {
+        private List<T> list = new ArrayList<>();
+        private Map<String, String> cursor = new HashMap<>();
+
+        private Builder() {
+        }
+
+        public Builder<T> add(T item) {
+            list.add(item);
+            return this;
+        }
+
+        public Builder<T> addAll(Collection<T> items) {
+            list.addAll(items);
+            return this;
+        }
+
+        public Builder<T> cursor(String name, Consumer<TransportCursor.Builder> consumer) {
+            TransportCursor.Builder builder = TransportCursor.builder();
+            consumer.accept(builder);
+            this.cursor.put(name, builder.toBase64());
+            return this;
+        }
+
+        public TransportList<T> build() {
+            return new TransportList<>(list, cursor);
+        }
     }
 }
