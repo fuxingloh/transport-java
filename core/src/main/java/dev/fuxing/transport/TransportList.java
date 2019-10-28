@@ -246,6 +246,24 @@ public class TransportList<T> extends ArrayList<T> {
             return this;
         }
 
+        public Builder<T> next(int size, BiConsumer<T, TransportCursor.Builder> consumer) {
+            if (list.size() == size) {
+                this.cursor("next", builder -> {
+                    consumer.accept(list.get(size - 1), builder);
+                });
+            }
+            return this;
+        }
+
+        public <R> Builder<R> map(Function<T, R> mapper) {
+            Builder<R> builder = new Builder<>();
+            builder.list = list.stream()
+                    .map(mapper)
+                    .collect(Collectors.toList());
+            builder.cursor = cursor;
+            return builder;
+        }
+
         public TransportList<T> build() {
             return new TransportList<>(list, cursor);
         }
