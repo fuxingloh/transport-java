@@ -6,11 +6,13 @@ import org.intellij.lang.annotations.Language;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -147,22 +149,25 @@ public class EntityQuery<T> {
         return asQuery().getResultList();
     }
 
-    public EntityStream asStream() {
-        return new EntityStream(asList());
+    public EntityStream<T> asStream() {
+        return new EntityStream<>(asList(), null, this.size);
     }
 
     public TransportList asTransportList(BiConsumer<T, TransportCursor.Builder> consumer) {
-        EntityStream stream = asStream();
+        EntityStream<T> stream = asStream();
         stream.cursor(consumer);
         return stream.asTransportList();
     }
 
-    public class EntityStream extends dev.fuxing.jpa.EntityStream<T> {
-        public EntityStream(List<T> list) {
-            super(list, null);
+    public static class EntityStream<T> extends dev.fuxing.jpa.EntityStream<T> {
+        protected final int size;
+
+        public EntityStream(List<T> list, Map<String, String> cursor, int size) {
+            super(list, cursor);
+            this.size = size;
         }
 
-        public EntityStream cursor(BiConsumer<T, TransportCursor.Builder> consumer) {
+        public EntityStream<T> cursor(BiConsumer<T, TransportCursor.Builder> consumer) {
             super.cursor(size, consumer);
             return this;
         }
@@ -173,13 +178,21 @@ public class EntityQuery<T> {
         }
 
         @Override
-        public EntityStream peek(Consumer<T> consumer) {
+        public EntityStream<T> peek(Consumer<T> consumer) {
             super.peek(consumer);
             return this;
         }
 
+        public <R> EntityStream<R> map(Function<T, R> function) {
+            List<R> returned = new ArrayList<>();
+            for (T t : list) {
+                returned.add(function.apply(t));
+            }
+            return new EntityStream<>(returned, cursor, size);
+        }
+
         @Override
-        public EntityStream removeIf(Predicate<T> predicate) {
+        public EntityStream<T> removeIf(Predicate<T> predicate) {
             super.removeIf(predicate);
             return this;
         }

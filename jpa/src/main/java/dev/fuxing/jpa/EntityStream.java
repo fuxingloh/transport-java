@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
  * Time: 16:11
  */
 public class EntityStream<T> {
-    private List<T> list;
-    private Map<String, String> cursor;
+    protected List<T> list;
+    protected Map<String, String> cursor;
 
     protected EntityStream(List<T> list, Map<String, String> cursor) {
         this.list = list;
