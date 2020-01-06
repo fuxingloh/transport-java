@@ -1,29 +1,10 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            url 'http://fx.artifactory.munchapp.co.fuxing.dev/artifactory/munch-repos'
-            credentials {
-                username = "${artifactory_user}"
-                password = "${artifactory_password}"
-            }
-        }
-    }
-    dependencies {
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
-    }
-}
-apply plugin: 'io.codearte.nexus-staging'
-
 subprojects {
     apply plugin: 'idea'
     apply plugin: 'java'
-    apply plugin: 'signing'
     apply plugin: 'maven'
 
     group 'dev.fuxing'
-    version '1.0-SNAPSHOT'
+    version '1.0.0'
 
     ext.jUnitVersion = '5.4.2'
     ext.guiceVersion = '4.2.2'
@@ -33,6 +14,10 @@ subprojects {
 
     compileJava.options.encoding = 'UTF-8'
     compileTestJava.options.encoding = 'UTF-8'
+
+    repositories {
+        mavenCentral()
+    }
 
     dependencies {
         testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: jUnitVersion
@@ -44,13 +29,13 @@ subprojects {
         compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
     }
 
-    repositories {
-        mavenCentral()
-    }
-
     test {
         useJUnitPlatform()
     }
+}
+
+subprojects {
+    apply plugin: 'maven-publish'
 
     task javadocJar(type: Jar) {
         classifier = 'javadoc'
@@ -66,100 +51,25 @@ subprojects {
         archives javadocJar, sourcesJar
     }
 
-    signing {
-        sign configurations.archives
-    }
-
-    // ./gradlew uploadArchives
-    // OSSRH publication
-    uploadArchives {
+    publishing {
         repositories {
-            mavenDeployer {
-                // POM signature
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-                // Target repository
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUser, password: ossrhPassword)
-                }
-                pom {
-                    artifactId = 'transport-' + project.name
-
-                    project {
-                        name 'transport-' + project.name
-                        description 'A very very very opinionated JSON communication protocol between your services.'
-                        packaging 'jar'
-                        url 'https://github.com/fuxingloh/transport-java'
-
-                        scm {
-                            connection 'scm:git:https://github.com/fuxingloh/transport-java.git'
-                            developerConnection 'scm:git:git@github.com:fuxingloh/transport-java.git'
-                            url 'https://github.com/fuxingloh/transport-java.git'
-                        }
-
-                        licenses {
-                            license {
-                                name 'Apache License 2.0'
-                                url 'https://github.com/fuxingloh/transport-java/blob/master/LICENSE'
-                                distribution 'repo'
-                            }
-                        }
-
-                        developers {
-                            developer {
-                                id = 'fuxing'
-                                name = 'Fuxing Loh'
-                                email = 'fuxing@fuxing.dev'
-                            }
-                        }
-                    }
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/fuxingloh/transport-java")
+                credentials {
+                    username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_USERNAME")
+                    password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_PASSWORD")
                 }
             }
         }
-    }
-}
-
-nexusStaging {
-    username = ossrhUser
-    password = ossrhPassword
-}
-
-allprojects {
-    apply plugin: "com.jfrog.artifactory"
-    apply plugin: 'maven-publish'
-}
-
-// https://www.jfrog.com/confluence/display/RTF/Gradle+Artifactory+Plugin
-artifactory {
-    contextUrl = "${artifactory_contextUrl}"
-    publish {
-        repository {
-            repoKey = "munch-snapshot"
-            username = "${artifactory_user}"
-            password = "${artifactory_password}"
-            maven = true
-        }
-        defaults {
-            publications('mavenJava')
-        }
-    }
-}
-
-subprojects {
-    publishing {
         publications {
-            mavenJava(MavenPublication) {
+            gpr(MavenPublication) {
+                from(components.java)
                 artifactId 'transport-' + project.name
-                from components.java
                 artifact(sourcesJar) {
                     classifier = 'sources'
                 }
             }
         }
-    }
-
-    task publishLib {
-        dependsOn 'build'
-        dependsOn 'artifactoryPublish'
-        tasks.findByName('artifactoryPublish').mustRunAfter 'build'
     }
 }

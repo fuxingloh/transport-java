@@ -6,14 +6,11 @@ import org.intellij.lang.annotations.Language;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * @author Fuxing Loh
@@ -51,9 +48,20 @@ public class EntityQuery<T> {
         return this;
     }
 
+    private String alias(String name) {
+        return name + "_" + parameters.size();
+    }
+
     public EntityQuery<T> where(String name, Object value) {
-        String ql = name + " = :" + name;
-        return where(ql, name, value);
+        String alias = alias(name);
+        String ql = name + " = :" + alias;
+        return where(ql, alias, value);
+    }
+
+    public EntityQuery<T> whereNotEqual(String name, Object value) {
+        String alias = alias(name);
+        String ql = name + " != :" + alias;
+        return where(ql, alias, value);
     }
 
     /**
@@ -150,51 +158,16 @@ public class EntityQuery<T> {
     }
 
     public EntityStream<T> asStream() {
-        return new EntityStream<>(asList(), null, this.size);
+        return new EntityStream<>(asList(), null);
+    }
+
+    public EntityStream<T> asStream(BiConsumer<T, TransportCursor.Builder> consumer) {
+        return new EntityStream<>(asList(), null)
+                .cursor(size, consumer);
     }
 
     public TransportList asTransportList(BiConsumer<T, TransportCursor.Builder> consumer) {
-        EntityStream<T> stream = asStream();
-        stream.cursor(consumer);
-        return stream.asTransportList();
-    }
-
-    public static class EntityStream<T> extends dev.fuxing.jpa.EntityStream<T> {
-        protected final int size;
-
-        public EntityStream(List<T> list, Map<String, String> cursor, int size) {
-            super(list, cursor);
-            this.size = size;
-        }
-
-        public EntityStream<T> cursor(BiConsumer<T, TransportCursor.Builder> consumer) {
-            super.cursor(size, consumer);
-            return this;
-        }
-
-        public TransportList asTransportList(BiConsumer<T, TransportCursor.Builder> consumer) {
-            cursor(consumer);
-            return asTransportList();
-        }
-
-        @Override
-        public EntityStream<T> peek(Consumer<T> consumer) {
-            super.peek(consumer);
-            return this;
-        }
-
-        public <R> EntityStream<R> map(Function<T, R> function) {
-            List<R> returned = new ArrayList<>();
-            for (T t : list) {
-                returned.add(function.apply(t));
-            }
-            return new EntityStream<>(returned, cursor, size);
-        }
-
-        @Override
-        public EntityStream<T> removeIf(Predicate<T> predicate) {
-            super.removeIf(predicate);
-            return this;
-        }
+        return asStream(consumer)
+                .asTransportList();
     }
 }
