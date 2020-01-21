@@ -11,5 +11,3 @@ include 'pubsub'
 include 'jpa'
 include 'jpa:jpa-postgres'
 
-include 'elastic'
-

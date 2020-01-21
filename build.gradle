@@ -25,8 +25,6 @@ subprojects {
         testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: jUnitVersion
 
         testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: jUnitVersion
-
-        compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
     }
 
     test {
