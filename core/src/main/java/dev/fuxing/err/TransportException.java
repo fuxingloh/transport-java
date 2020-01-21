@@ -18,6 +18,7 @@ import java.util.List;
  * Date: 16/6/2017
  * Time: 12:42 PM
  */
+@Deprecated
 public class TransportException extends RuntimeException {
     public static final String DOMAIN;
 

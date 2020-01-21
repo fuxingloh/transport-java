@@ -2,6 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
+      <module name="transport-java.elastic.main" target="11" />
+      <module name="transport-java.elastic.test" target="11" />
       <module name="transport-java.exception.main" target="11" />
       <module name="transport-java.exception.test" target="11" />
       <module name="transport-java.jpa.postgres.main" target="11" />
@@ -15,6 +17,8 @@
       <module name="transport-java.notification.test" target="1.8" />
       <module name="transport-java.postgres.main" target="11" />
       <module name="transport-java.postgres.test" target="11" />
+      <module name="transport-java.pubsub.main" target="11" />
+      <module name="transport-java.pubsub.test" target="11" />
       <module name="transport-java.test" target="1.8" />
       <module name="transport-java.utils.main" target="1.8" />
       <module name="transport-java.utils.test" target="1.8" />

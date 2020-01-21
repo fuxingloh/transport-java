@@ -78,7 +78,6 @@ public class TransportResult {
 
         private Object data;
         private Map<String, String> cursor = new HashMap<>();
-        private Map<String, Object> extra = new HashMap<>();
 
         private Map<String, Object> map = new HashMap<>();
 
@@ -138,17 +137,6 @@ public class TransportResult {
             return this;
         }
 
-        public Builder extra(Map<String, Object> extra) {
-            this.extra.putAll(extra);
-            return this;
-        }
-
-        public Builder extra(String key, Object object) {
-            Objects.requireNonNull(key);
-            this.extra.put(key, object);
-            return this;
-        }
-
         public TransportResult build() {
             if (data != null) {
                 map.put("data", data);
@@ -156,10 +144,6 @@ public class TransportResult {
 
             if (!cursor.isEmpty()) {
                 map.put("cursor", cursor);
-            }
-
-            if (!extra.isEmpty()) {
-                map.put("extra", extra);
             }
             return new TransportResult(code, map);
         }
