@@ -2,7 +2,10 @@ package dev.fuxing.transport.service;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.typesafe.config.ConfigFactory;
-import dev.fuxing.err.*;
+import dev.fuxing.err.BadGatewayException;
+import dev.fuxing.err.ErrorURL;
+import dev.fuxing.err.TimeoutException;
+import dev.fuxing.err.UnknownException;
 import dev.fuxing.transport.TransportError;
 import dev.fuxing.utils.JsonUtils;
 import org.slf4j.Logger;
@@ -12,7 +15,6 @@ import spark.Spark;
 
 import java.net.SocketTimeoutException;
 import java.util.Collection;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -95,14 +97,7 @@ public class TransportServer implements TransportPath {
         // Default handler for not found
         Spark.notFound((req, res) -> {
             res.header("content-type", TransportRoute.APP_JSON);
-
-            ObjectNode node = JsonUtils.wrap("error", TransportError.builder()
-                    .code(404)
-                    .type("EndpointNotFound")
-                    .message("Requested " + req.pathInfo() + " endpoint is not registered.")
-                    .asJson()
-            );
-            return JsonUtils.toString(node);
+            return "{\"code\":404}";
         });
         logger.info("Registered http 404 not found json response.");
 
@@ -123,40 +118,18 @@ public class TransportServer implements TransportPath {
     }
 
     /**
-     * @see TransportException to understand how custom exception is created
      * @see UnknownException to understand how unknown exception is mapped
      * @see TransportError how error are formatted in response body
      */
     protected void handleException() {
-        logger.info("Adding exception handling for StatusException.");
-        Spark.exception(StatusException.class, (exception, request, response) -> {
-            response.body(TransportTransformer.EMPTY);
-            response.type(TransportRoute.APP_JSON);
-            response.status(exception.getCode());
-        });
-
-        logger.info("Adding exception handling for ValidationException.");
-        Spark.exception(ValidationException.class, (exception, request, response) -> {
-            List<String> sources = exception.getSources();
-            logger.debug("Validation exception thrown from sources: {}", sources, exception);
-            try {
-                logger.debug("Validated object:\n{}", JsonUtils.toString(exception.getObject()));
-            } catch (JsonException e) {
-                logger.debug("Attempt to parse validated object into JSON failed.");
-            }
-            handleException(new TransportContext(request, response), exception);
-        });
-
         logger.info("Adding exception handling for TransportException.");
-        Spark.exception(TransportException.class, (exception, request, response) -> {
-            List<String> sources = exception.getSources();
-            logger.warn("Transport exception thrown from sources: {}", sources, exception);
+        Spark.exception(ErrorURL.class, (exception, request, response) -> {
             handleException(new TransportContext(request, response), exception);
         });
 
         logger.info("Adding exception handling for TimeoutException.");
         Spark.exception(SocketTimeoutException.class, (exception, request, response) -> {
-            handleException(new TransportContext(request, response), new TimeoutException(exception));
+            handleException(new TransportContext(request, response), new TimeoutException(408, "Request from client to server has timeout.", exception));
         });
 
         logger.info("Adding exception handling for all Exception.");
@@ -165,8 +138,8 @@ public class TransportServer implements TransportPath {
                 if (mapException(exception)) return;
                 // Unknown exception
                 logger.warn("Unknown exception thrown", exception);
-                handleException(new TransportContext(request, response), new UnknownException(exception));
-            } catch (TransportException te) {
+                handleException(new TransportContext(request, response), new UnknownException("Unknown error.", exception));
+            } catch (ErrorURL te) {
                 // Mapped exception
                 logger.warn("Transport exception thrown", exception);
                 handleException(new TransportContext(request, response), te);
@@ -179,32 +152,29 @@ public class TransportServer implements TransportPath {
      *
      * @param exception additional exception to map
      * @return whether it is handled, meaning not to logg
-     * @throws TransportException mapped exceptions
+     * @throws ErrorURL mapped exceptions
      */
-    protected boolean mapException(Exception exception) throws TransportException {
+    protected boolean mapException(Exception exception) throws ErrorURL {
         return false;
     }
 
     /**
-     * @param context   with request and response
-     * @param exception exception to write
+     * @param context  with request and response
+     * @param errorURL exception to write
      */
-    protected void handleException(TransportContext context, TransportException exception) {
-        TransportError error = exception.toError();
+    protected void handleException(TransportContext context, ErrorURL errorURL) {
+        ObjectNode error = JsonUtils.createObjectNode()
+                .put("code", errorURL.getCode())
+                .put("url", errorURL.getUrl())
+                .put("message", errorURL.getMessage());
 
-        if (!debug && error != null) {
-            // If debug mode is disabled, stacktrace and source will be removed
-            // Exception will still be logged
-            error.setStacktrace(null);
-            error.setSources(null);
-        }
 
-        ObjectNode body = JsonUtils.wrap("error", JsonUtils.valueToTree(error));
+        ObjectNode body = JsonUtils.wrap("error", error);
 
         Response response = context.response();
         response.body(JsonUtils.toString(body));
         response.type(TransportRoute.APP_JSON);
-        response.status(exception.getCode());
+        response.status(errorURL.getCode());
     }
 
     /**
@@ -269,7 +239,7 @@ public class TransportServer implements TransportPath {
 
         return withHealth(DEFAULT_HEALTH_PATH, cxt -> {
             if (future.isDone()) {
-                throw new StatusException(400);
+                throw new BadGatewayException();
             }
             return "";
         });

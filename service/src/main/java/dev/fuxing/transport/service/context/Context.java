@@ -1,6 +1,6 @@
 package dev.fuxing.transport.service.context;
 
-import dev.fuxing.err.ParamException;
+import dev.fuxing.err.BadRequestException;
 import spark.Request;
 import spark.Response;
 
@@ -52,7 +52,7 @@ public interface Context {
                 return (T) i;
             }
         } catch (NumberFormatException e) {
-            throw new ParamException(name);
+            throw new BadRequestException("The request could not be understood by the server due to malformed " + name + ".");
         }
 
         if (clazz == Boolean.class) {

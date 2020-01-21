@@ -2,7 +2,6 @@
 package dev.fuxing.jpa;
 
 
-import dev.fuxing.err.ExceptionParser;
 import dev.fuxing.err.NotFoundException;
 
 import javax.persistence.EntityManager;
@@ -152,7 +151,6 @@ public class TransactionProvider {
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
-            ExceptionParser.parse(e);
             throw new DatabaseException(e);
         } finally {
             if (entityManager != null) {
@@ -192,7 +190,6 @@ public class TransactionProvider {
                 throw new NotFoundException();
             }
 
-            ExceptionParser.parse(e);
             throw new DatabaseException(e);
         } finally {
             if (entityManager != null) {

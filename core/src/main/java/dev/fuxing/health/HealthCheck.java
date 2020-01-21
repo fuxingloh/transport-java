@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Date: 2019-04-02
  * Time: 12:09
  */
+@SuppressWarnings("rawtypes")
 public class HealthCheck {
     private static final Logger logger = LoggerFactory.getLogger(HealthCheck.class);
 

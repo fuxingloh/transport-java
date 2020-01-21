@@ -71,7 +71,7 @@ public final class JsonUtils {
         try {
             return objectMapper.readerForUpdating(object).readValue(patch);
         } catch (IOException e) {
-            throw new JsonException(e);
+            throw new JsonException("Your JSON is malformed.", e);
         }
     }
 
@@ -86,7 +86,7 @@ public final class JsonUtils {
         try {
             return objectMapper.readerForUpdating(object).readValue(patch);
         } catch (IOException e) {
-            throw new JsonException(e);
+            throw new JsonException("Your JSON is malformed.", e);
         }
     }
 
@@ -155,7 +155,7 @@ public final class JsonUtils {
         try {
             return objectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            throw new JsonException(e);
+            throw new JsonException("Your JSON is malformed.", e);
         }
     }
 
@@ -169,7 +169,7 @@ public final class JsonUtils {
         try {
             return objectMapper.readTree(json);
         } catch (IOException e) {
-            throw new JsonException(e);
+            throw new JsonException("Your JSON is malformed.", e);
         }
     }
 
@@ -183,7 +183,7 @@ public final class JsonUtils {
         try {
             return objectMapper.readTree(bytes);
         } catch (IOException e) {
-            throw new JsonException(e);
+            throw new JsonException("Your JSON is malformed.", e);
         }
     }
 
@@ -191,7 +191,7 @@ public final class JsonUtils {
         try {
             return objectMapper.readValue(bytes, clazz);
         } catch (IOException e) {
-            throw new JsonException(e);
+            throw new JsonException("Your JSON is malformed.", e);
         }
     }
 
@@ -230,7 +230,7 @@ public final class JsonUtils {
         try {
             return objectMapper.treeToValue(node, clazz);
         } catch (IOException e) {
-            throw new JsonException(e);
+            throw new JsonException("Your JSON is malformed.", e);
         }
     }
 
@@ -247,7 +247,7 @@ public final class JsonUtils {
         try {
             return objectMapper.readValue(value, clazz);
         } catch (IOException e) {
-            throw new JsonException(e);
+            throw new JsonException("Your JSON is malformed.", e);
         }
     }
 
@@ -257,7 +257,7 @@ public final class JsonUtils {
         try {
             return objectMapper.readValue(value, clazz);
         } catch (IOException e) {
-            throw new JsonException(e);
+            throw new JsonException("Your JSON is malformed.", e);
         }
     }
 
@@ -266,7 +266,7 @@ public final class JsonUtils {
             CollectionType type = objectMapper.getTypeFactory().constructCollectionType(List.class, clazz);
             return objectMapper.convertValue(nodes, type);
         } catch (IllegalArgumentException e) {
-            throw new JsonException(e);
+            throw new JsonException("Your JSON is malformed.", e);
         }
     }
 
@@ -275,7 +275,7 @@ public final class JsonUtils {
             CollectionType type = objectMapper.getTypeFactory().constructCollectionType(List.class, clazz);
             return objectMapper.readValue(json, type);
         } catch (IOException e) {
-            throw new JsonException(e);
+            throw new JsonException("Your JSON is malformed.", e);
         }
     }
 
@@ -292,7 +292,7 @@ public final class JsonUtils {
             CollectionType type = objectMapper.getTypeFactory().constructCollectionType(Set.class, clazz);
             return objectMapper.convertValue(nodes, type);
         } catch (IllegalArgumentException e) {
-            throw new JsonException(e);
+            throw new JsonException("Your JSON is malformed.", e);
         }
     }
 
@@ -301,7 +301,7 @@ public final class JsonUtils {
             CollectionType type = objectMapper.getTypeFactory().constructCollectionType(Set.class, clazz);
             return objectMapper.readValue(json, type);
         } catch (IOException e) {
-            throw new JsonException(e);
+            throw new JsonException("Your JSON is malformed.", e);
         }
     }
 
@@ -310,7 +310,7 @@ public final class JsonUtils {
             MapType type = objectMapper.getTypeFactory().constructMapType(HashMap.class, keyClass, valueClass);
             return objectMapper.convertValue(nodes, type);
         } catch (IllegalArgumentException e) {
-            throw new JsonException(e);
+            throw new JsonException("Your JSON is malformed.", e);
         }
     }
 
@@ -319,7 +319,7 @@ public final class JsonUtils {
             MapType type = objectMapper.getTypeFactory().constructMapType(HashMap.class, keyClass, valueClass);
             return objectMapper.readValue(bytes, type);
         } catch (IOException e) {
-            throw new JsonException(e);
+            throw new JsonException("Your JSON is malformed.", e);
         }
     }
 
@@ -328,7 +328,7 @@ public final class JsonUtils {
             MapType type = objectMapper.getTypeFactory().constructMapType(HashMap.class, keyClass, valueClass);
             return objectMapper.readValue(json, type);
         } catch (IOException e) {
-            throw new JsonException(e);
+            throw new JsonException("Your JSON is malformed.", e);
         }
     }
 }

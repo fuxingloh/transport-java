@@ -13,16 +13,6 @@ import java.util.Map;
  */
 public interface RequestAs {
 
-    /**
-     * Validate status code of response
-     *
-     * @param codes codes to validate
-     * @return TransportResponse for fluent chaining
-     */
-    default TransportResponse hasCode(int... codes) {
-        return asResponse().hasCode(codes);
-    }
-
     default JsonNode asNode() {
         return asResponse().getNode();
     }

@@ -2,7 +2,6 @@ package dev.fuxing.transport.client;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
-import dev.fuxing.err.StatusException;
 import dev.fuxing.transport.TransportList;
 import dev.fuxing.utils.JsonUtils;
 import org.apache.http.Header;
@@ -12,7 +11,6 @@ import org.apache.http.StatusLine;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.function.Function;
 
 /**
@@ -123,25 +121,5 @@ public class TransportResponse {
      */
     public <T> T as(Function<JsonNode, T> mapper) {
         return mapper.apply(getNode());
-    }
-
-    /**
-     * Validate status code of response
-     *
-     * @param codes status codes to validate
-     * @return TransportResponse for fluent chaining
-     */
-    public TransportResponse hasCode(int... codes) {
-        int code = getStatus();
-
-        for (int i : codes) {
-            if (i == code) return this;
-        }
-
-        StringJoiner joiner = new StringJoiner(", ");
-        for (int i : codes) {
-            joiner.add(String.valueOf(i));
-        }
-        throw new StatusException(code, "Explicit validation on code(" + joiner.toString() + ") failed.");
     }
 }

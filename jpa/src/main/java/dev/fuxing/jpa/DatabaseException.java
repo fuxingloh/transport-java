@@ -1,8 +1,7 @@
 package dev.fuxing.jpa;
 
 
-import dev.fuxing.err.ExceptionParser;
-import dev.fuxing.err.TransportException;
+import dev.fuxing.err.ErrorURL;
 
 /**
  * Created by: Fuxing
@@ -10,17 +9,9 @@ import dev.fuxing.err.TransportException;
  * Time: 18:31
  * Project: v22-transport
  */
-public final class DatabaseException extends TransportException {
-
-    static {
-        ExceptionParser.register(DatabaseException.class, DatabaseException::new);
-    }
-
-    DatabaseException(TransportException e) {
-        super(e);
-    }
+public final class DatabaseException extends ErrorURL {
 
     public DatabaseException(Throwable cause) {
-        super(500, DatabaseException.class, "Unknown database error.", cause);
+        super(500, "err.fuxing.dev", DatabaseException.class, "Unknown database error.", cause);
     }
 }

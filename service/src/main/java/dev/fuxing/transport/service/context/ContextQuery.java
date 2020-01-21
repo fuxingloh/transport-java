@@ -1,7 +1,6 @@
 package dev.fuxing.transport.service.context;
 
 import dev.fuxing.err.BadRequestException;
-import dev.fuxing.err.ParamException;
 import dev.fuxing.transport.TransportSort;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,14 +18,14 @@ public interface ContextQuery extends Context {
     /**
      * @param name name of query string
      * @return long value from query string
-     * @throws ParamException query param not found
+     * @throws BadRequestException query param not found
      */
-    default long queryLong(String name) throws ParamException {
+    default long queryLong(String name) throws BadRequestException {
         try {
             String value = queryString(name);
             return Long.parseLong(value);
         } catch (NumberFormatException e) {
-            throw new ParamException(name);
+            throw new BadRequestException("The request could not be understood by the server due to malformed " + name + ".");
         }
     }
 
@@ -34,29 +33,29 @@ public interface ContextQuery extends Context {
      * @param name         name of query string
      * @param defaultValue default long value if not found
      * @return long value from query string
-     * @throws ParamException query param not found
+     * @throws BadRequestException query param not found
      */
-    default long queryLong(String name, long defaultValue) throws ParamException {
+    default long queryLong(String name, long defaultValue) throws BadRequestException {
         try {
             String value = request().queryParams(name);
             if (StringUtils.isBlank(value)) return defaultValue;
             return Long.parseLong(value);
         } catch (NumberFormatException e) {
-            throw new ParamException(name);
+            throw new BadRequestException("The request could not be understood by the server due to malformed " + name + ".");
         }
     }
 
     /**
      * @param name name of query string
      * @return integer value from query string
-     * @throws ParamException query param not found
+     * @throws BadRequestException query param not found
      */
-    default int queryInt(String name) throws ParamException {
+    default int queryInt(String name) throws BadRequestException {
         try {
             String value = queryString(name);
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
-            throw new ParamException(name);
+            throw new BadRequestException("The request could not be understood by the server due to malformed " + name + ".");
         }
     }
 
@@ -64,15 +63,15 @@ public interface ContextQuery extends Context {
      * @param name         name of query string
      * @param defaultValue default int value if not found
      * @return int value from query string
-     * @throws ParamException query param not found
+     * @throws BadRequestException query param not found
      */
-    default int queryInt(String name, int defaultValue) throws ParamException {
+    default int queryInt(String name, int defaultValue) throws BadRequestException {
         try {
             String value = request().queryParams(name);
             if (StringUtils.isBlank(value)) return defaultValue;
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
-            throw new ParamException(name);
+            throw new BadRequestException("The request could not be understood by the server due to malformed " + name + ".");
         }
     }
 
@@ -98,14 +97,14 @@ public interface ContextQuery extends Context {
     /**
      * @param name name of query string
      * @return double value from query string
-     * @throws ParamException query param not found
+     * @throws BadRequestException query param not found
      */
-    default double queryDouble(String name) throws ParamException {
+    default double queryDouble(String name) throws BadRequestException {
         try {
             String value = queryString(name);
             return Double.parseDouble(value);
         } catch (NumberFormatException e) {
-            throw new ParamException(name);
+            throw new BadRequestException("The request could not be understood by the server due to malformed " + name + ".");
         }
     }
 
@@ -113,15 +112,15 @@ public interface ContextQuery extends Context {
      * @param name         name of query string
      * @param defaultValue default double value if not found
      * @return double value from query string
-     * @throws ParamException query param not found
+     * @throws BadRequestException query param not found
      */
-    default double queryDouble(String name, double defaultValue) throws ParamException {
+    default double queryDouble(String name, double defaultValue) throws BadRequestException {
         try {
             String value = request().queryParams(name);
             if (StringUtils.isBlank(value)) return defaultValue;
             return Double.parseDouble(value);
         } catch (NumberFormatException e) {
-            throw new ParamException(name);
+            throw new BadRequestException("The request could not be understood by the server due to malformed " + name + ".");
         }
     }
 
@@ -130,9 +129,9 @@ public interface ContextQuery extends Context {
      *
      * @param name name of query string
      * @return boolean value from query string
-     * @throws ParamException query param not found
+     * @throws BadRequestException query param not found
      */
-    default boolean queryBool(String name) throws ParamException {
+    default boolean queryBool(String name) throws BadRequestException {
         return Boolean.parseBoolean(queryString(name));
     }
 
@@ -142,9 +141,9 @@ public interface ContextQuery extends Context {
      * @param name         name of query string
      * @param defaultValue default boolean value if not found
      * @return boolean value from query string
-     * @throws ParamException query param not found
+     * @throws BadRequestException query param not found
      */
-    default boolean queryBool(String name, boolean defaultValue) throws ParamException {
+    default boolean queryBool(String name, boolean defaultValue) throws BadRequestException {
         String value = request().queryParams(name);
         if (StringUtils.isBlank(value)) return defaultValue;
         return Boolean.parseBoolean(value);
@@ -167,14 +166,14 @@ public interface ContextQuery extends Context {
     /**
      * @param name name of query string
      * @return String value
-     * @throws ParamException query param not found
+     * @throws BadRequestException query param not found
      */
-    default String queryString(String name) throws ParamException {
+    default String queryString(String name) throws BadRequestException {
         String value = request().queryParams(name);
         if (StringUtils.isNotBlank(value)) {
             return value;
         }
-        throw new ParamException(name);
+        throw new BadRequestException("The request could not be understood by the server due to malformed " + name + ".");
     }
 
     /**
@@ -182,7 +181,7 @@ public interface ContextQuery extends Context {
      * @param defaultValue default String value
      * @return String value
      */
-    default String queryString(String name, String defaultValue) throws ParamException {
+    default String queryString(String name, String defaultValue) throws BadRequestException {
         String value = request().queryParams(name);
         if (StringUtils.isNotBlank(value)) {
             return value;

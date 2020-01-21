@@ -1,7 +1,7 @@
 package dev.fuxing.transport;
 
+import dev.fuxing.err.BadRequestException;
 import dev.fuxing.err.ConflictException;
-import dev.fuxing.err.ParamException;
 import dev.fuxing.utils.JsonUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -117,7 +117,7 @@ public class TransportCursor {
     /**
      * @param key of value
      * @return found or defaultValue
-     * @throws ParamException if cannot be parsed
+     * @throws BadRequestException if cannot be parsed
      */
     @Nullable
     public Long getLong(String key) {
@@ -128,7 +128,7 @@ public class TransportCursor {
      * @param key          of value
      * @param defaultValue to return, Nullable
      * @return found or defaultValue
-     * @throws ParamException if cannot be parsed
+     * @throws BadRequestException if cannot be parsed
      */
     @Nullable
     public Long getLong(String key, @Nullable Long defaultValue) {
@@ -138,14 +138,14 @@ public class TransportCursor {
         try {
             return Long.parseLong(value);
         } catch (NumberFormatException e) {
-            throw new ParamException(key);
+            throw new BadRequestException("The request could not be understood by the server due to malformed " + key + ".");
         }
     }
 
     /**
      * @param key of value
      * @return found or defaultValue
-     * @throws ParamException if cannot be parsed
+     * @throws BadRequestException if cannot be parsed
      */
     @Nullable
     public Integer getInt(String key) {
@@ -156,7 +156,7 @@ public class TransportCursor {
      * @param key          of value
      * @param defaultValue to return, Nullable
      * @return found or defaultValue
-     * @throws ParamException if cannot be parsed
+     * @throws BadRequestException if cannot be parsed
      */
     @Nullable
     public Integer getInt(String key, @Nullable Integer defaultValue) {
@@ -166,14 +166,14 @@ public class TransportCursor {
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
-            throw new ParamException(key);
+            throw new BadRequestException("The request could not be understood by the server due to malformed " + key + ".");
         }
     }
 
     /**
      * @param key of value
      * @return found or defaultValue
-     * @throws ParamException if cannot be parsed
+     * @throws BadRequestException if cannot be parsed
      */
     @Nullable
     public Double getDouble(String key) {
@@ -184,7 +184,7 @@ public class TransportCursor {
      * @param key          of value
      * @param defaultValue to return, Nullable
      * @return found or defaultValue
-     * @throws ParamException if cannot be parsed
+     * @throws BadRequestException if cannot be parsed
      */
     @Nullable
     public Double getDouble(String key, @Nullable Double defaultValue) {
@@ -194,7 +194,7 @@ public class TransportCursor {
         try {
             return Double.parseDouble(value);
         } catch (NumberFormatException e) {
-            throw new ParamException(key);
+            throw new BadRequestException("The request could not be understood by the server due to malformed " + key + ".");
         }
     }
 

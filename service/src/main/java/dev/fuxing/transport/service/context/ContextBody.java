@@ -1,8 +1,8 @@
 package dev.fuxing.transport.service.context;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import dev.fuxing.err.BadRequestException;
 import dev.fuxing.err.JsonException;
-import dev.fuxing.err.ParamException;
 import dev.fuxing.utils.JsonUtils;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public interface ContextBody extends Context {
      */
     default JsonNode bodyAsJson(boolean nonNull) {
         JsonNode json = bodyAsJson();
-        if (nonNull && json == null) throw new ParamException("body");
+        if (nonNull && json == null) throw new BadRequestException();
         return json;
     }
 

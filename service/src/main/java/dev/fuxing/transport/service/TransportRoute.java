@@ -29,7 +29,7 @@ public interface TransportRoute extends Route {
      * @param request  spark request
      * @param response spark response
      * @return TransportResult
-     * @throws dev.fuxing.err.TransportException auto convert into {error: {}}
+     * @throws dev.fuxing.err.ErrorURL auto convert into {error: {}}
      * @throws Exception                         auto convert into {error: {type: "UnknownException", ...}}
      * @see Object auto convert into {data: ...}
      * @see TransportResult auto convert into {...}
@@ -47,7 +47,7 @@ public interface TransportRoute extends Route {
      * @param response spark response
      * @param handler  {@code Object handle(TransportContext context)}
      * @return TransportResult
-     * @throws dev.fuxing.err.TransportException auto convert into {error: {}}
+     * @throws dev.fuxing.err.ErrorURL auto convert into {error: {}}
      * @throws Exception                         auto convert into {error: {type: "UnknownException", ...}}
      * @see Object auto convert into {data: ...}
      * @see TransportResult auto convert into {...}

@@ -95,8 +95,7 @@ public class TransportRequest implements RequestQuery, RequestAs {
             Response response = executor.execute(request);
             return asResponse(response);
         } catch (Exception e) {
-            ExceptionParser.parse(e);
-            throw new UnknownException(e);
+            throw new UnknownException("Unknown error.", e);
         }
     }
 
@@ -138,26 +137,25 @@ public class TransportRequest implements RequestQuery, RequestAs {
         }
     }
 
-    private void tryParseError(JsonNode body) throws TransportException {
+    private void tryParseError(JsonNode body) throws ErrorURL {
         if (!body.has("error")) return;
 
         TransportError error = JsonUtils.toObject(body.path("error"), TransportError.class);
-        TransportException exception = TransportException.fromError(error, getUrl());
-
-        if (exception != null) {
-            throw exception;
+        if (StringUtils.isAnyBlank(error.getUrl(), error.getMessage()) || error.getCode() == null) {
+            throw new UnknownException("Failed to parsed error body.");
         }
+        throw new ErrorURL(error.getCode(), error.getUrl(), error.getMessage());
     }
 
-    private void tryParseStatus(StatusLine status, Exception e) throws TransportException {
+    private void tryParseStatus(StatusLine status, Exception e) throws ErrorURL {
         // 502, 503, 504: all gateway related status code
         switch (status.getStatusCode()) {
             case 502:
-                throw new BadGatewayException(e);
+                throw new BadGatewayException();
             case 503:
-                throw new UnavailableException(e);
+                throw new UnavailableException();
             case 504:
-                throw new TimeoutException(504, e);
+                throw new TimeoutException(504, "Request from client to server has timeout.", e);
         }
     }
 }

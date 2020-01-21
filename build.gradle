@@ -4,7 +4,7 @@ subprojects {
     apply plugin: 'maven'
 
     group 'dev.fuxing'
-    version '1.0.0'
+    version '1.1.0'
 
     ext.jUnitVersion = '5.4.2'
     ext.guiceVersion = '4.2.2'
@@ -17,6 +17,9 @@ subprojects {
 
     repositories {
         mavenCentral()
+        maven {
+            url = uri("https://maven.pkg.github.com/fuxingloh/error-url")
+        }
     }
 
     dependencies {
